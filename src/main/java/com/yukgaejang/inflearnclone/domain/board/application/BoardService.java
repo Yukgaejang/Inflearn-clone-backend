@@ -58,7 +58,7 @@ public class BoardService {
                 .category(board.getCategory())
                 .likeCount(board.getLikeCount())
                 .viewCount(board.getViewCount())
-                .userNickname(board.getUser().getNickname()) // 유저 닉네임 가져오기
+                .userNickname(board.getUser().getNickname())
                 .tags(board.getTags().stream().map(Tag::getName).collect(Collectors.toSet()))
                 .build();
     }
@@ -71,7 +71,7 @@ public class BoardService {
                 .category(board.getCategory())
                 .createdAt(board.getCreatedAt())
                 .updatedAt(board.getUpdatedAt())
-                .userNickname(board.getUser().getNickname()) // 유저 닉네임 가져오기
+                .userNickname(board.getUser().getNickname())
                 .build();
     }
 
@@ -86,7 +86,7 @@ public class BoardService {
                 .category(board.getCategory())
                 .likeCount(board.getLikeCount())
                 .viewCount(board.getViewCount())
-                .userNickname(board.getUser().getNickname()) // 유저 닉네임 가져오기
+                .userNickname(board.getUser().getNickname())
                 .tags(board.getTags().stream().map(Tag::getName).collect(Collectors.toSet()))
                 .build();
     }
