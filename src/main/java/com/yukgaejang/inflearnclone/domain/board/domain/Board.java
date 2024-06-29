@@ -68,7 +68,7 @@ public class Board extends BaseEntity {
         this.tags = tags;
         this.likeCount = 0L;
         this.viewCount = 0L;
-        this.updatedAt = null;
+        this.updatedAt = LocalDateTime.now();
     }
 
     // Post 수정
