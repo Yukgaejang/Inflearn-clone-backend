@@ -14,7 +14,7 @@ import java.util.Set;
 
 @Getter
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED) // 생성자를 protected로 유지
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Board extends BaseEntity {
 
     @Column(nullable = false, length = 255)
