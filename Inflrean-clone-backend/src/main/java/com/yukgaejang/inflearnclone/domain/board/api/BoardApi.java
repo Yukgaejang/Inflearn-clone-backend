@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @RestController
-@RequestMapping(value = "/board")
+@RequestMapping(value = "/boards")
 public class BoardApi {
 
     private final BoardService boardService;
@@ -56,6 +56,7 @@ public class BoardApi {
         }
     }
 
+    // 게시글 생성
     @PostMapping("/create")
     @Operation(summary = "게시글 생성", description = "글쓰기")
     public ResponseEntity<BoardDetailDto> createPost(@RequestBody CreatePostDto createPost) {
@@ -68,21 +69,14 @@ public class BoardApi {
         Set<Tag> tags = new HashSet<>();
         for (String tagName : createPost.getTagNames()) {
             Tag tag = tagDao.findByName(tagName).orElseGet(() -> {
-                Tag newTag = new Tag();
-                newTag.setName(tagName);
+                Tag newTag = Tag.createTag(tagName);
                 return tagDao.save(newTag);
             });
             tags.add(tag);
         }
 
         Board board = new Board();
-        board.setUser(user);
-        board.setTitle(createPost.getTitle());
-        board.setContent(createPost.getContent());
-        board.setCategory(createPost.getCategory());
-        board.setTags(tags);
-
-        Board createdPost = boardService.createPost(board);
+        Board createdPost = boardService.createPost(board, user, createPost.getTitle(), createPost.getContent(), createPost.getCategory(), tags);
         BoardDetailDto createdPostDto = boardService.convertToBoardDetailDto(createdPost);
         return ResponseEntity.ok(createdPostDto);
     }
@@ -95,22 +89,16 @@ public class BoardApi {
         Optional<Board> existingPost = boardService.getPostById(id);
         if (existingPost.isPresent()) {
             Board board = existingPost.get();
-            board.setTitle(boardDetails.getTitle());
-            board.setContent(boardDetails.getContent());
-            board.setCategory(boardDetails.getCategory());
             Set<Tag> tags = new HashSet<>();
             for (String tagName : boardDetails.getTagNames()) {
                 Tag tag = tagDao.findByName(tagName).orElseGet(() -> {
-                    Tag newTag = new Tag();
-                    newTag.setName(tagName);
+                    Tag newTag = Tag.createTag(tagName);
                     return tagDao.save(newTag);
                 });
                 tags.add(tag);
             }
-            board.setTags(tags);
-
-            Board updatedPost = boardService.updatePost(board);
-            BoardDto updatedPostDto = boardService.convertToDTO(updatedPost); // 변경된 부분
+            Board updatedPost = boardService.updatePost(board, boardDetails.getTitle(), boardDetails.getContent(), boardDetails.getCategory(), tags);
+            BoardDto updatedPostDto = boardService.convertToDTO(updatedPost);
             return ResponseEntity.ok(updatedPostDto);
         } else {
             return ResponseEntity.notFound().build();
@@ -125,5 +113,4 @@ public class BoardApi {
         boardService.deletePost(id);
         return ResponseEntity.noContent().build();
     }
-
 }

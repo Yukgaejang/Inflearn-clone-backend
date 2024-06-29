@@ -1,6 +1,7 @@
 package com.yukgaejang.inflearnclone.domain.board.application;
 
 import com.yukgaejang.inflearnclone.domain.board.dao.BoardDao;
+import com.yukgaejang.inflearnclone.domain.board.domain.User;
 import com.yukgaejang.inflearnclone.domain.board.dto.BoardDetailDto;
 import com.yukgaejang.inflearnclone.domain.board.domain.Board;
 import com.yukgaejang.inflearnclone.domain.board.domain.Tag;
@@ -9,9 +10,9 @@ import com.yukgaejang.inflearnclone.domain.board.dto.BoardListDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,15 +33,13 @@ public class BoardService {
         return boardDao.findById(id);
     }
 
-    public Board createPost(Board board) {
-        board.setLikeCount(0L);
-        board.setViewCount(0L);
-        board.setUpdatedAt(null);
+    public Board createPost(Board board, User user, String title, String content, String category, Set<Tag> tags) {
+        board.createPost(user, title, content, category, tags);
         return boardDao.save(board);
     }
 
-    public Board updatePost(Board board) {
-        board.setUpdatedAt(LocalDateTime.now());
+    public Board updatePost(Board board, String title, String content, String category, Set<Tag> tags) {
+        board.updatePost(title, content, category, tags);
         return boardDao.save(board);
     }
 

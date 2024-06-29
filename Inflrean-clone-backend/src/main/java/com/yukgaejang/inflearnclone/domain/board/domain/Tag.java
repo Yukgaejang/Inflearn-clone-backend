@@ -1,17 +1,16 @@
 package com.yukgaejang.inflearnclone.domain.board.domain;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Getter
-@Setter
 @Entity
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Tag {
 
     @Id
@@ -23,4 +22,13 @@ public class Tag {
 
     @ManyToMany(mappedBy = "tags")
     private Set<Board> boards = new HashSet<>();
+
+    private Tag(String name) {
+        this.name = name;
+    }
+
+    // Tag 생성
+    public static Tag createTag(String name) {
+        return new Tag(name);
+    }
 }

@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Getter
-@Setter
 @Entity
 @Builder
 @NoArgsConstructor
@@ -45,4 +44,26 @@ public class Board extends BaseEntity {
 
     @Column(nullable = true)
     private LocalDateTime updatedAt;
+
+    // Post 생성
+    public void createPost(User user, String title, String content, String category, Set<Tag> tags) {
+        this.user = user;
+        this.title = title;
+        this.content = content;
+        this.category = category;
+        this.tags = tags;
+        this.likeCount = 0L;
+        this.viewCount = 0L;
+        this.updatedAt = null;
+    }
+
+    // Post 수정
+    public void updatePost(String title, String content, String category, Set<Tag> tags) {
+        this.title = title;
+        this.content = content;
+        this.category = category;
+        this.tags = tags;
+        this.updatedAt = LocalDateTime.now();
+    }
 }
+
