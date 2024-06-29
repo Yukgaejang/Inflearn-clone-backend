@@ -44,7 +44,7 @@ public class Board extends BaseEntity {
     )
     private Set<Tag> tags = new HashSet<>();
 
-    @Column(nullable = true)
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
     @Builder
