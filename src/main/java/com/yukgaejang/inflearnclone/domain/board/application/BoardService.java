@@ -1,12 +1,12 @@
 package com.yukgaejang.inflearnclone.domain.board.application;
 
 import com.yukgaejang.inflearnclone.domain.board.dao.BoardDao;
-import com.yukgaejang.inflearnclone.domain.board.domain.User;
-import com.yukgaejang.inflearnclone.domain.board.dto.BoardDetailDto;
 import com.yukgaejang.inflearnclone.domain.board.domain.Board;
 import com.yukgaejang.inflearnclone.domain.board.domain.Tag;
+import com.yukgaejang.inflearnclone.domain.board.dto.BoardDetailDto;
 import com.yukgaejang.inflearnclone.domain.board.dto.BoardDto;
 import com.yukgaejang.inflearnclone.domain.board.dto.BoardListDto;
+import com.yukgaejang.inflearnclone.domain.user.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,7 +58,7 @@ public class BoardService {
                 .category(board.getCategory())
                 .likeCount(board.getLikeCount())
                 .viewCount(board.getViewCount())
-                .userNickname(board.getUser().getNickname())
+                .userNickname(board.getUser().getNickname()) // 유저 닉네임 가져오기
                 .tags(board.getTags().stream().map(Tag::getName).collect(Collectors.toSet()))
                 .build();
     }
@@ -71,7 +71,7 @@ public class BoardService {
                 .category(board.getCategory())
                 .createdAt(board.getCreatedAt())
                 .updatedAt(board.getUpdatedAt())
-                .userNickname(board.getUser().getNickname())
+                .userNickname(board.getUser().getNickname()) // 유저 닉네임 가져오기
                 .build();
     }
 
@@ -86,7 +86,7 @@ public class BoardService {
                 .category(board.getCategory())
                 .likeCount(board.getLikeCount())
                 .viewCount(board.getViewCount())
-                .userNickname(board.getUser().getNickname())
+                .userNickname(board.getUser().getNickname()) // 유저 닉네임 가져오기
                 .tags(board.getTags().stream().map(Tag::getName).collect(Collectors.toSet()))
                 .build();
     }

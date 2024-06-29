@@ -1,15 +1,15 @@
 package com.yukgaejang.inflearnclone.domain.board.api;
 
+import com.yukgaejang.inflearnclone.domain.board.application.BoardService;
 import com.yukgaejang.inflearnclone.domain.board.dao.TagDao;
 import com.yukgaejang.inflearnclone.domain.board.dao.UserDao;
-import com.yukgaejang.inflearnclone.domain.board.dto.BoardDto;
+import com.yukgaejang.inflearnclone.domain.user.domain.User;
 import com.yukgaejang.inflearnclone.domain.board.dto.BoardDetailDto;
+import com.yukgaejang.inflearnclone.domain.board.dto.BoardDto;
 import com.yukgaejang.inflearnclone.domain.board.dto.BoardListDto;
 import com.yukgaejang.inflearnclone.domain.board.dto.CreatePostDto;
-import com.yukgaejang.inflearnclone.domain.board.application.BoardService;
 import com.yukgaejang.inflearnclone.domain.board.domain.Board;
 import com.yukgaejang.inflearnclone.domain.board.domain.Tag;
-import com.yukgaejang.inflearnclone.domain.board.domain.User;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +49,6 @@ public class BoardApi {
     public ResponseEntity<BoardDetailDto> getPostById(@PathVariable("id") Long id) {
         Optional<BoardDetailDto> board = boardService.getPostDTOById(id);
         if (board.isPresent()) {
-//            boardService.incrementViewCount(board.get().getId());
             return ResponseEntity.ok(board.get());
         } else {
             return ResponseEntity.notFound().build();
@@ -75,14 +74,19 @@ public class BoardApi {
             tags.add(tag);
         }
 
-        Board board = new Board();
+        Board board = Board.builder()
+                .title(createPost.getTitle())
+                .content(createPost.getContent())
+                .category(createPost.getCategory())
+                .user(user)
+                .tags(tags)
+                .build();
         Board createdPost = boardService.createPost(board, user, createPost.getTitle(), createPost.getContent(), createPost.getCategory(), tags);
         BoardDetailDto createdPostDto = boardService.convertToBoardDetailDto(createdPost);
         return ResponseEntity.ok(createdPostDto);
     }
 
-
-    //게시글 수정
+    // 게시글 수정
     @PutMapping("/{id}")
     @Operation(summary = "게시글 수정", description = "게시글 수정")
     public ResponseEntity<BoardDto> updatePost(@PathVariable("id") Long id, @RequestBody CreatePostDto boardDetails) {
@@ -104,7 +108,6 @@ public class BoardApi {
             return ResponseEntity.notFound().build();
         }
     }
-
 
     // 게시글 삭제
     @DeleteMapping("/{id}")
