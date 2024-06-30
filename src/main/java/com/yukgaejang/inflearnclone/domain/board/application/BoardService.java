@@ -33,6 +33,12 @@ public class BoardService {
         return boardDao.findById(id);
     }
 
+    public List<BoardListDto> getPostsByCategory(String category) {
+        return boardDao.findByCategory(category).stream()
+                .map(this::convertToBoardListDto)
+                .collect(Collectors.toList());
+    }
+
     public Board createPost(Board board, User user, String title, String content, String category, Set<Tag> tags) {
         board.createPost(user, title, content, category, tags);
         return boardDao.save(board);

@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,9 +43,6 @@ public class Board extends BaseEntity {
     )
     private Set<Tag> tags = new HashSet<>();
 
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
-
     @Builder
     public Board(String title, String content, String category, User user, Set<Tag> tags) {
         this.title = title;
@@ -56,7 +52,6 @@ public class Board extends BaseEntity {
         this.tags = tags;
         this.likeCount = 0L;
         this.viewCount = 0L;
-        this.updatedAt = null;
     }
 
     // Post 생성
@@ -68,7 +63,6 @@ public class Board extends BaseEntity {
         this.tags = tags;
         this.likeCount = 0L;
         this.viewCount = 0L;
-        this.updatedAt = LocalDateTime.now();
     }
 
     // Post 수정
@@ -77,6 +71,5 @@ public class Board extends BaseEntity {
         this.content = content;
         this.category = category;
         this.tags = tags;
-        this.updatedAt = LocalDateTime.now();
     }
 }
