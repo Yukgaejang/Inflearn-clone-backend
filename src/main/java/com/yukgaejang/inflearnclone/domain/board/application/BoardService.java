@@ -1,12 +1,12 @@
 package com.yukgaejang.inflearnclone.domain.board.application;
 
 import com.yukgaejang.inflearnclone.domain.board.dao.BoardDao;
-import com.yukgaejang.inflearnclone.domain.board.domain.User;
-import com.yukgaejang.inflearnclone.domain.board.dto.BoardDetailDto;
 import com.yukgaejang.inflearnclone.domain.board.domain.Board;
 import com.yukgaejang.inflearnclone.domain.board.domain.Tag;
+import com.yukgaejang.inflearnclone.domain.board.dto.BoardDetailDto;
 import com.yukgaejang.inflearnclone.domain.board.dto.BoardDto;
 import com.yukgaejang.inflearnclone.domain.board.dto.BoardListDto;
+import com.yukgaejang.inflearnclone.domain.user.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +31,12 @@ public class BoardService {
 
     public Optional<Board> getPostById(Long id) {
         return boardDao.findById(id);
+    }
+
+    public List<BoardListDto> getPostsByCategory(String category) {
+        return boardDao.findByCategory(category).stream()
+                .map(this::convertToBoardListDto)
+                .collect(Collectors.toList());
     }
 
     public Board createPost(Board board, User user, String title, String content, String category, Set<Tag> tags) {

@@ -1,13 +1,14 @@
 package com.yukgaejang.inflearnclone.domain.user.domain;
 
+import com.yukgaejang.inflearnclone.domain.board.domain.Board;
 import com.yukgaejang.inflearnclone.domain.model.BaseEntity;
 import com.yukgaejang.inflearnclone.domain.user.dto.LoginType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,10 +23,17 @@ public class User extends BaseEntity {
 
     private LoginType loginType;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Board> boards;
+
     @Builder
     public User(String nickname, String email, LoginType loginType) {
         this.nickname = nickname;
         this.email = email;
         this.loginType = loginType;
+    }
+
+    public String getNickname() {
+        return nickname;
     }
 }
