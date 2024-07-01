@@ -14,8 +14,13 @@ public class JWTUtil {
     private final SecretKey secretKey;
 
     public JWTUtil(@Value("${jwt.secret}") String secret) {
-        this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
-                Jwts.SIG.HS256.key().build().getAlgorithm());
+        try {
+            this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
+                    Jwts.SIG.HS256.key().build().getAlgorithm());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid secret key", e);
+        }
+
     }
 
     public String getUsername(String token) {
