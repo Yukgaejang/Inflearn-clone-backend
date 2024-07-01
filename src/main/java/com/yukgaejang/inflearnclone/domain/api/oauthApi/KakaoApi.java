@@ -8,44 +8,59 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
+@RequestMapping("/social")
 @RequiredArgsConstructor
-public class KakaoLogoutApi {
+public class KakaoApi {
 
     private final JWTUtil jwtUtil;
     private final RedisService redisService;
 
+    @GetMapping("/login")
+    public String login() {
+        return "You are already logged";
+    }
+
     @PostMapping("/logout")
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
+    @ResponseBody
+    public String logout(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
         if(cookies == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            return "{\"message\": \"No cookies found\"}";
         }
 
         Optional<Cookie> refreshCookie = Arrays.stream(cookies)
                 .filter(cookie -> "refresh".equals(cookie.getName()))
                 .findFirst();
 
-        if(!refreshCookie.isPresent()) {
+        System.out.println("response : " + response);
+        System.out.println("refreshCookie : " + refreshCookie);
+        for(Cookie cookie : cookies) {
+            System.out.println("cookies : " + cookie.getValue());
+        }
+        if(refreshCookie.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            return "{\"message\": \"No refresh token found\"}";
         }
 
         String refreshToken = refreshCookie.get().getValue();
         if(refreshToken == null || refreshToken.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            return "{\"message\": \"User not authenticated\"}";
         }
 
         String key = jwtUtil.getUsername(refreshToken);
 
         if(redisService.getValues(key) == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            return "{\"message\": \"Empty refresh token\"}";
         }
 
         redisService.deleteValues(key);
@@ -54,7 +69,10 @@ public class KakaoLogoutApi {
         cookie.setMaxAge(0);
         cookie.setPath("/");
 
-        response.setStatus(HttpServletResponse.SC_OK);
         response.addCookie(cookie);
+
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/json");
+        return "{\"message\": \"Logout success\"}";
     }
 }
