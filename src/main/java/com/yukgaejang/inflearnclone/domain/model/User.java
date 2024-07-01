@@ -9,21 +9,17 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "TBL_MEMBER")
-public class UserEntity extends BaseEntity {
-
-    @Column(name = "ROLE")
-    private String role;
-
-    @Column(name = "NAME")
-    private String name;
-
-    @Column(name = "USER_NAME")
-    private String userName;
+@Table(name = "USER")
+public class User extends BaseEntity {
+    @Column(name = "NICKNAME")
+    private String nickname;
 
     @Column(name = "EMAIL")
     private String email;
 
     @Column(name = "PROFILE_IMAGE")
     private String profileImage;
+
+    @Column(name = "SOCIAL_TYPE")
+    private String socialType;
 }

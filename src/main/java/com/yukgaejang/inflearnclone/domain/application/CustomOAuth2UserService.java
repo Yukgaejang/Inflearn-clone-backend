@@ -5,7 +5,7 @@ import com.yukgaejang.inflearnclone.domain.dto.CustomOAuth2User;
 import com.yukgaejang.inflearnclone.domain.dto.KakaoResponse;
 import com.yukgaejang.inflearnclone.domain.dto.OAuth2Response;
 import com.yukgaejang.inflearnclone.domain.dto.UserDto;
-import com.yukgaejang.inflearnclone.domain.model.UserEntity;
+import com.yukgaejang.inflearnclone.domain.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -33,42 +33,40 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return null;
         }
 
-        String username = oAuth2Response.getProvider() + "_" + oAuth2Response.getProviderId();
+        String userEmail = oAuth2Response.getEmail();
 
-        UserEntity existData = userDao.findByUserName(username);
+        User existData = userDao.findByEmail(userEmail);
 
         if(existData == null) {
-            UserEntity userEntity = new UserEntity();
-            userEntity.setUserName(username);
-            userEntity.setName(oAuth2Response.getName());
-            userEntity.setEmail(oAuth2Response.getEmail());
-            userEntity.setProfileImage(oAuth2Response.getProfileImage());
-            userEntity.setRole("ROLE_USER");
+            User user = new User();
+            user.setNickname(oAuth2Response.getName());
+            user.setEmail(oAuth2Response.getEmail());
+            user.setProfileImage(oAuth2Response.getProfileImage());
+            user.setSocialType("KAKAO");
 
-            userDao.save(userEntity);
+            userDao.save(user);
 
-            UserDto userDTO = new UserDto();
-            userDTO.setUserName(username);
-            userDTO.setName(oAuth2Response.getName());
-            userDTO.setProfileImage(oAuth2Response.getProfileImage());
-            userDTO.setRole("ROLE_USER");
+            UserDto userDto = new UserDto();
+            userDto.setUserName(oAuth2Response.getProvider() + "_" + oAuth2Response.getProviderId());
+            userDto.setName(oAuth2Response.getName());
+            userDto.setProfileImage(oAuth2Response.getProfileImage());
+            userDto.setRole("ROLE_USER");
 
-            return new CustomOAuth2User(userDTO);
+            return new CustomOAuth2User(userDto);
         } else {
             existData.setEmail(oAuth2Response.getEmail());
-            existData.setName(oAuth2Response.getName());
+            existData.setNickname(oAuth2Response.getName());
             existData.setProfileImage(oAuth2Response.getProfileImage());
 
             userDao.save(existData);
 
-            UserDto userDTO = new UserDto();
-            userDTO.setUserName(username);
-            userDTO.setName(existData.getName());
-            userDTO.setProfileImage(existData.getProfileImage());
-            userDTO.setRole("ROLE_USER");
+            UserDto userDto = new UserDto();
+            userDto.setUserName(oAuth2Response.getProvider() + "_" + oAuth2Response.getProviderId());
+            userDto.setName(existData.getNickname());
+            userDto.setProfileImage(existData.getProfileImage());
+            userDto.setRole("ROLE_USER");
 
-            return new CustomOAuth2User(userDTO);
+            return new CustomOAuth2User(userDto);
         }
     }
-
 }
