@@ -6,21 +6,26 @@ import com.yukgaejang.inflearnclone.domain.user.dto.LoginType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Set;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "users")
 public class User extends BaseEntity {
 
-    @Column(unique = true)
+    @Column(unique = true, name = "NICKNAME")
     private String nickname;
 
-    @Column(unique = true)
+    @Column(unique = true, name = "EMAIL")
     private String email;
 
+    @Column(name = "LOGIN_TYPE")
     private LoginType loginType;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

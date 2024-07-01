@@ -1,5 +1,6 @@
 package com.yukgaejang.inflearnclone.domain.dto;
 
+import com.yukgaejang.inflearnclone.domain.board.dto.UserDto;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -34,7 +35,7 @@ public class CustomOAuth2User implements OAuth2User {
 
     @Override
     public String getName() {
-        return userDto.getName();
+        return userDto.getNickname();
     }
 
     public String getUserName() {

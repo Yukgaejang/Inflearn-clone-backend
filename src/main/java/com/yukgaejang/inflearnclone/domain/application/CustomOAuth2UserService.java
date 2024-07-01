@@ -1,11 +1,12 @@
 package com.yukgaejang.inflearnclone.domain.application;
 
-import com.yukgaejang.inflearnclone.domain.dao.UserDao;
+import com.yukgaejang.inflearnclone.domain.board.dao.UserDao;
+import com.yukgaejang.inflearnclone.domain.board.dto.UserDto;
 import com.yukgaejang.inflearnclone.domain.dto.CustomOAuth2User;
 import com.yukgaejang.inflearnclone.domain.dto.KakaoResponse;
 import com.yukgaejang.inflearnclone.domain.dto.OAuth2Response;
-import com.yukgaejang.inflearnclone.domain.dto.UserDto;
-import com.yukgaejang.inflearnclone.domain.model.User;
+import com.yukgaejang.inflearnclone.domain.user.domain.User;
+import com.yukgaejang.inflearnclone.domain.user.dto.LoginType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -38,32 +39,25 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         User existData = userDao.findByEmail(userEmail);
 
         if(existData == null) {
-            User user = new User();
-            user.setNickname(oAuth2Response.getName());
-            user.setEmail(oAuth2Response.getEmail());
-            user.setProfileImage(oAuth2Response.getProfileImage());
-            user.setSocialType("KAKAO");
+            User user = new User(oAuth2Response.getName(), oAuth2Response.getEmail(), LoginType.KAKAO);
 
             userDao.save(user);
 
             UserDto userDto = new UserDto();
             userDto.setUserName(oAuth2Response.getProvider() + "_" + oAuth2Response.getProviderId());
-            userDto.setName(oAuth2Response.getName());
-            userDto.setProfileImage(oAuth2Response.getProfileImage());
+            userDto.setNickname(oAuth2Response.getName());
             userDto.setRole("ROLE_USER");
 
             return new CustomOAuth2User(userDto);
         } else {
             existData.setEmail(oAuth2Response.getEmail());
             existData.setNickname(oAuth2Response.getName());
-            existData.setProfileImage(oAuth2Response.getProfileImage());
 
             userDao.save(existData);
 
             UserDto userDto = new UserDto();
             userDto.setUserName(oAuth2Response.getProvider() + "_" + oAuth2Response.getProviderId());
-            userDto.setName(existData.getNickname());
-            userDto.setProfileImage(existData.getProfileImage());
+            userDto.setNickname(existData.getNickname());
             userDto.setRole("ROLE_USER");
 
             return new CustomOAuth2User(userDto);
