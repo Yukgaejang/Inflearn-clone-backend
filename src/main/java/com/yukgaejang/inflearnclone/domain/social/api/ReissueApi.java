@@ -1,7 +1,7 @@
-package com.yukgaejang.inflearnclone.domain.api.oauthApi;
+package com.yukgaejang.inflearnclone.domain.social.api;
 
-import com.yukgaejang.inflearnclone.domain.application.RedisService;
-import com.yukgaejang.inflearnclone.global.util.JWTUtil;
+import com.yukgaejang.inflearnclone.domain.social.application.RedisService;
+import com.yukgaejang.inflearnclone.domain.social.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

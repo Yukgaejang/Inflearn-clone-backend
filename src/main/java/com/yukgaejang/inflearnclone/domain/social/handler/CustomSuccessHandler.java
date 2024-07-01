@@ -1,9 +1,9 @@
-package com.yukgaejang.inflearnclone.domain.handler;
+package com.yukgaejang.inflearnclone.domain.social.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yukgaejang.inflearnclone.domain.application.RedisService;
-import com.yukgaejang.inflearnclone.domain.dto.CustomOAuth2User;
-import com.yukgaejang.inflearnclone.global.util.JWTUtil;
+import com.yukgaejang.inflearnclone.domain.social.application.RedisService;
+import com.yukgaejang.inflearnclone.domain.social.dto.CustomOAuth2User;
+import com.yukgaejang.inflearnclone.domain.social.util.JWTUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

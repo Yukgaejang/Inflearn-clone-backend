@@ -1,9 +1,9 @@
-package com.yukgaejang.inflearnclone.global.filter;
+package com.yukgaejang.inflearnclone.domain.social.filter;
 
 
 import com.yukgaejang.inflearnclone.domain.board.dto.UserDto;
-import com.yukgaejang.inflearnclone.domain.dto.CustomOAuth2User;
-import com.yukgaejang.inflearnclone.global.util.JWTUtil;
+import com.yukgaejang.inflearnclone.domain.social.dto.CustomOAuth2User;
+import com.yukgaejang.inflearnclone.domain.social.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

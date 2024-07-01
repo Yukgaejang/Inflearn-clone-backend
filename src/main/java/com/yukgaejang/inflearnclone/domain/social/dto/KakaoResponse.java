@@ -1,4 +1,4 @@
-package com.yukgaejang.inflearnclone.domain.dto;
+package com.yukgaejang.inflearnclone.domain.social.dto;
 
 import java.util.Map;
 

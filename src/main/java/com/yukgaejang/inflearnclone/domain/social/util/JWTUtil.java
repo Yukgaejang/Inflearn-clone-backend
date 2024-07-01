@@ -1,4 +1,4 @@
-package com.yukgaejang.inflearnclone.global.util;
+package com.yukgaejang.inflearnclone.domain.social.util;
 
 import io.jsonwebtoken.Jwts;
 import java.nio.charset.StandardCharsets;

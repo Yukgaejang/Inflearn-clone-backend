@@ -1,4 +1,4 @@
-package com.yukgaejang.inflearnclone.domain.api;
+package com.yukgaejang.inflearnclone.domain.social.api;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

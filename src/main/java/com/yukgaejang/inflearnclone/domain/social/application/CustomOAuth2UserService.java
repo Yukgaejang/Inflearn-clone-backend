@@ -1,10 +1,10 @@
-package com.yukgaejang.inflearnclone.domain.application;
+package com.yukgaejang.inflearnclone.domain.social.application;
 
 import com.yukgaejang.inflearnclone.domain.board.dao.UserDao;
 import com.yukgaejang.inflearnclone.domain.board.dto.UserDto;
-import com.yukgaejang.inflearnclone.domain.dto.CustomOAuth2User;
-import com.yukgaejang.inflearnclone.domain.dto.KakaoResponse;
-import com.yukgaejang.inflearnclone.domain.dto.OAuth2Response;
+import com.yukgaejang.inflearnclone.domain.social.dto.CustomOAuth2User;
+import com.yukgaejang.inflearnclone.domain.social.dto.KakaoResponse;
+import com.yukgaejang.inflearnclone.domain.social.dto.OAuth2Response;
 import com.yukgaejang.inflearnclone.domain.user.domain.User;
 import com.yukgaejang.inflearnclone.domain.user.dto.LoginType;
 import lombok.RequiredArgsConstructor;

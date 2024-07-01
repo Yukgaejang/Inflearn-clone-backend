@@ -1,4 +1,4 @@
-package com.yukgaejang.inflearnclone.domain.application;
+package com.yukgaejang.inflearnclone.domain.social.application;
 
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;

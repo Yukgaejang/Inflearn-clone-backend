@@ -1,9 +1,9 @@
 package com.yukgaejang.inflearnclone.global.config;
 
-import com.yukgaejang.inflearnclone.domain.application.CustomOAuth2UserService;
-import com.yukgaejang.inflearnclone.global.filter.JWTFilter;
-import com.yukgaejang.inflearnclone.domain.handler.CustomSuccessHandler;
-import com.yukgaejang.inflearnclone.global.util.JWTUtil;
+import com.yukgaejang.inflearnclone.domain.social.application.CustomOAuth2UserService;
+import com.yukgaejang.inflearnclone.domain.social.filter.JWTFilter;
+import com.yukgaejang.inflearnclone.domain.social.handler.CustomSuccessHandler;
+import com.yukgaejang.inflearnclone.domain.social.util.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
