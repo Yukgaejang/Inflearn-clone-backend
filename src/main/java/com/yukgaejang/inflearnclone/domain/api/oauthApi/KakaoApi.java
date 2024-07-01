@@ -25,7 +25,7 @@ public class KakaoApi {
     @ResponseBody
     public String logout(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
-        if(cookies == null) {
+        if (cookies == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return "{\"message\": \"No cookies found\"}";
         }
@@ -36,23 +36,23 @@ public class KakaoApi {
 
         System.out.println("response : " + response);
         System.out.println("refreshCookie : " + refreshCookie);
-        for(Cookie cookie : cookies) {
+        for (Cookie cookie : cookies) {
             System.out.println("cookies : " + cookie.getValue());
         }
-        if(refreshCookie.isEmpty()) {
+        if (refreshCookie.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return "{\"message\": \"No refresh token found\"}";
         }
 
         String refreshToken = refreshCookie.get().getValue();
-        if(refreshToken == null || refreshToken.isEmpty()) {
+        if (refreshToken == null || refreshToken.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return "{\"message\": \"User not authenticated\"}";
         }
 
         String key = jwtUtil.getUsername(refreshToken);
 
-        if(redisService.getValues(key) == null) {
+        if (redisService.getValues(key) == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return "{\"message\": \"Empty refresh token\"}";
         }

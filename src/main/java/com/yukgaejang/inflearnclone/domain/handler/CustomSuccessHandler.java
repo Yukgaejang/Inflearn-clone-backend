@@ -27,7 +27,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final RedisService redisService;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                                        Authentication authentication)
             throws IOException {
         CustomOAuth2User customUserDetail = (CustomOAuth2User) authentication.getPrincipal();
 
@@ -62,7 +63,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private Cookie createCookie(String key, String value) {
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24*60*60);     // 쿠키가 살아있을 시간
+        cookie.setMaxAge(24 * 60 * 60);     // 쿠키가 살아있을 시간
         cookie.setHttpOnly(true);       // http에서만 쿠키가 동작할 수 있도록 (js와 같은곳에서 가져갈 수 없도록)
 
         return cookie;

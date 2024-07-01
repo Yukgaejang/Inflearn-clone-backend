@@ -22,11 +22,12 @@ public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 
         String accessToken = request.getHeader("access");
 
-        if(accessToken  == null) {
+        if (accessToken == null) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -34,7 +35,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String originToken = accessToken.substring(7);
 
         try {
-            if(jwtUtil.isExpired(originToken)) {
+            if (jwtUtil.isExpired(originToken)) {
                 PrintWriter writer = response.getWriter();
                 writer.println("access token expired");
 
@@ -51,7 +52,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         String category = jwtUtil.getCategory(originToken);
 
-        if(!"access".equals(category)) {
+        if (!"access".equals(category)) {
             PrintWriter writer = response.getWriter();
             writer.println("invalid access token");
 
@@ -68,7 +69,8 @@ public class JWTFilter extends OncePerRequestFilter {
 
         CustomOAuth2User customOAuth2User = new CustomOAuth2User(userDTO);
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(customOAuth2User, null,
+                customOAuth2User.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);

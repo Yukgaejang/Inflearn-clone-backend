@@ -28,7 +28,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         OAuth2Response oAuth2Response = null;
 
-        if("kakao".equals(registration)) {
+        if ("kakao".equals(registration)) {
             oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
         } else {
             return null;
@@ -38,7 +38,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         User existData = userDao.findByEmail(userEmail);
 
-        if(existData == null) {
+        if (existData == null) {
             User user = new User(oAuth2Response.getName(), oAuth2Response.getEmail(), LoginType.KAKAO);
 
             userDao.save(user);

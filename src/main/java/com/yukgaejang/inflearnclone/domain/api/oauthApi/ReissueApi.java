@@ -26,18 +26,18 @@ public class ReissueApi {
 
         String refresh = null;
         Cookie[] cookies = request.getCookies();
-        for(Cookie cookie : cookies) {
-            if("refresh".equals(cookie.getName())) {
+        for (Cookie cookie : cookies) {
+            if ("refresh".equals(cookie.getName())) {
                 refresh = cookie.getValue();
             }
         }
 
-        if(refresh == null) {
+        if (refresh == null) {
             return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
         }
 
         try {
-            if(jwtUtil.isExpired(refresh)) {
+            if (jwtUtil.isExpired(refresh)) {
                 return new ResponseEntity<>("refresh token expired", HttpStatus.BAD_REQUEST);
             }
         } catch (ExpiredJwtException e) {
@@ -46,7 +46,7 @@ public class ReissueApi {
 
         String category = jwtUtil.getCategory(refresh);
 
-        if(!category.equals("refresh")) {
+        if (!category.equals("refresh")) {
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
 
@@ -54,7 +54,7 @@ public class ReissueApi {
         String role = jwtUtil.getRole(refresh);
 
         String redisRefrshToken = redisService.getValues(username);
-        if(redisService.checkExistsValue(redisRefrshToken)) {
+        if (redisService.checkExistsValue(redisRefrshToken)) {
             return new ResponseEntity<>("no exists in redis refresh token", HttpStatus.BAD_REQUEST);
         }
 
@@ -71,7 +71,7 @@ public class ReissueApi {
 
     private Cookie createCookie(String key, String value) {
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24*60*60);     // 쿠키가 살아있을 시간
+        cookie.setMaxAge(24 * 60 * 60);     // 쿠키가 살아있을 시간
         /*cookie.setSecure();*/         // https에서만 동작할것인지
         /*cookie.setPath("/");*/        // 쿠키가 전역에서 동작
         cookie.setHttpOnly(true);       // http에서만 쿠키가 동작할 수 있도록 (js와 같은곳에서 가져갈 수 없도록)
