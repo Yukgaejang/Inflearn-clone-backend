@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,11 +20,6 @@ public class KakaoApi {
 
     private final JWTUtil jwtUtil;
     private final RedisService redisService;
-
-    @GetMapping("/login")
-    public String login() {
-        return "You are already logged";
-    }
 
     @PostMapping("/logout")
     @ResponseBody

@@ -64,13 +64,13 @@ public class SecurityConfig {
 
         http
                 .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/oauth2/authorization/kakao")
                         .successHandler(customSuccessHandler)
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
                                 .userService(customOAuth2UserService)));
 
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/social/login/**").authenticated()
                         .requestMatchers("/social/logout/**").authenticated()
                         .requestMatchers("/mypage/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/board/**").authenticated()
