@@ -1,29 +1,23 @@
 package com.yukgaejang.inflearnclone.domain.social.util;
 
 import io.jsonwebtoken.Jwts;
-import jakarta.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConfigurationProperties(prefix = "jwt")
 public class JWTUtil {
 
-    private static SecretKey secretKey;
+    private SecretKey secretKey;
+    private String secret;
 
-    private final String secret = "abcde";
-
-    @PostConstruct
-    private void init() {
-        setSecret(secret);
-    }
-
-    private static void setSecret(String secret) {
+    public void setSecret(String secret) {
         try {
-            secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
+            this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
                     Jwts.SIG.HS256.key().build().getAlgorithm());
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid secret key", e);
