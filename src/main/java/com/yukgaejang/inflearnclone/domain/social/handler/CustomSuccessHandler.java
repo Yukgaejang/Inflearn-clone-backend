@@ -50,15 +50,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.setHeader("access", "Bearer " + accessToken);
         response.addCookie(createCookie("refresh", refreshToken));
         response.setStatus(HttpStatus.OK.value());
-        response.setContentType("application/json");
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("message", "Login successful");
-
-        String jsonResponse = objectMapper.writeValueAsString(responseBody);
-        response.getWriter().write(jsonResponse);
-        response.getWriter().flush();
     }
 
     private Cookie createCookie(String key, String value) {

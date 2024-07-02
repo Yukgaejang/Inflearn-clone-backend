@@ -65,10 +65,10 @@ public class SecurityConfig {
 
         http
                 .oauth2Login(oauth2 -> oauth2
-                        //.loginPage("/oauth2/authorization/kakao")
-                        .successHandler(customSuccessHandler));
-                        //.userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
-                        //        .userService(customOAuth2UserService)));
+                        .loginPage("/oauth2/authorization/kakao")
+                        .successHandler(customSuccessHandler)
+                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
+                                .userService(customOAuth2UserService)));
 
 
         http
