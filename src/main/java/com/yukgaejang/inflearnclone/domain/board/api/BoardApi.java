@@ -26,16 +26,16 @@ public class BoardApi {
 
     private final BoardService boardService;
     private final TagDao tagDao;
-    private final UserDao userRepository;
+    private final UserDao userDao;
 
     @Autowired
-    public BoardApi(BoardService boardService, TagDao tagDao, UserDao userRepository) {
+    public BoardApi(BoardService boardService, TagDao tagDao, UserDao userDao) {
         this.boardService = boardService;
         this.tagDao = tagDao;
-        this.userRepository = userRepository;
+        this.userDao = userDao;
     }
 
-    // 게시글 전체 조회
+    // 게시글 전체 조회 -> 인프런에서 제공x
     @GetMapping("")
     @Operation(summary = "게시글 전체 조회", description = "게시판의 모든 게시글 조회")
     public ResponseEntity<List<BoardListDto>> getAllPosts() {
@@ -46,18 +46,27 @@ public class BoardApi {
     // 카테고리별 게시글 조회
     @GetMapping("/{category}")
     @Operation(summary = "카테고리별 게시글 조회", description = "특정 카테고리의 게시글 조회")
-    public ResponseEntity<List<BoardListDto>> getPostsByCategory(@PathVariable("category") String category) {
-        List<BoardListDto> boards = boardService.getPostsByCategory(category);
+    public ResponseEntity<List<BoardListDto>> getPostsByCategory(
+            @PathVariable("category") String category,
+            @RequestParam(value = "order", required = false) String order
+    ) {
+        List<BoardListDto> boards = boardService.getPostsByCategory(category, order);
         return ResponseEntity.ok(boards);
     }
 
     // 게시글 상세 조회
-    @GetMapping("/{id}")
+    @GetMapping("/{category}/{id}")
     @Operation(summary = "게시글 상세 조회", description = "게시판의 특정 게시글 조회")
-    public ResponseEntity<BoardDetailDto> getPostById(@PathVariable("id") Long id) {
-        Optional<BoardDetailDto> board = boardService.getPostDTOById(id);
-        if (board.isPresent()) {
-            return ResponseEntity.ok(board.get());
+    public ResponseEntity<BoardDetailDto> getPostById(
+            @PathVariable("category") String category,
+            @PathVariable("id") Long id
+    ) {
+        Optional<Board> boardOptional = boardService.getPostById(id);
+        if (boardOptional.isPresent()) {
+            Board board = boardOptional.get();
+            boardService.incrementViewCount(board);
+            BoardDetailDto boardDetailDto = boardService.convertToBoardDetailDto(board);
+            return ResponseEntity.ok(boardDetailDto);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -66,8 +75,10 @@ public class BoardApi {
     // 게시글 생성
     @PostMapping("/create")
     @Operation(summary = "게시글 생성", description = "글쓰기")
-    public ResponseEntity<Object> createPost(@RequestBody CreatePostDto createPost) {
-        Optional<User> userOptional = userRepository.findById(createPost.getUserId());
+    public ResponseEntity<Object> createPost(
+            @RequestBody CreatePostDto createPost
+    ) {
+        Optional<User> userOptional = userDao.findById(createPost.getUserId());
         if (userOptional.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
@@ -93,6 +104,7 @@ public class BoardApi {
                 .category(createPost.getCategory())
                 .user(user)
                 .tags(tags)
+                .tags(tags)
                 .build();
         Board createdPost = boardService.createPost(board, user, createPost.getTitle(), createPost.getContent(), createPost.getCategory(), tags);
         BoardDetailDto createdPostDto = boardService.convertToBoardDetailDto(createdPost);
@@ -102,7 +114,10 @@ public class BoardApi {
     // 게시글 수정
     @PutMapping("/{id}")
     @Operation(summary = "게시글 수정", description = "게시글 수정")
-    public ResponseEntity<Object> updatePost(@PathVariable("id") Long id, @RequestBody CreatePostDto boardDetails) {
+    public ResponseEntity<Object> updatePost(
+            @PathVariable("id") Long id,
+            @RequestBody CreatePostDto boardDetails
+    ) {
         Optional<Board> existingPost = boardService.getPostById(id);
         if (existingPost.isPresent()) {
             if (boardDetails.getTagNames().size() > 10) {
@@ -129,8 +144,30 @@ public class BoardApi {
     // 게시글 삭제
     @DeleteMapping("/{id}")
     @Operation(summary = "게시글 삭제", description = "게시글 삭제")
-    public ResponseEntity<Void> deletePost(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deletePost(
+            @PathVariable("id") Long id
+    ) {
         boardService.deletePost(id);
         return ResponseEntity.noContent().build();
     }
+
+    // 게시글 좋아요 토글
+    @PostMapping("/{id}/heart")
+    @Operation(summary = "게시글 좋아요 토글", description = "게시글의 좋아요 상태 토글")
+    public ResponseEntity<Void> toggleHeart(
+            @PathVariable("id") Long id,
+            @RequestParam Long userId
+    ) {
+        Optional<User> userOptional = userDao.findById(userId);
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        User user = userOptional.get();
+        boolean hearted = boardService.toggleHeart(id, user);
+        return ResponseEntity.ok().build();
+    }
+
+
+
 }

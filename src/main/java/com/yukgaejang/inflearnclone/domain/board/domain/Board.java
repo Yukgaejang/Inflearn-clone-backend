@@ -72,4 +72,20 @@ public class Board extends BaseEntity {
         this.category = category;
         this.tags = tags;
     }
+
+    // 좋아요 수 증가
+    public void incrementLikeCount() {
+        this.likeCount++;
+    }
+
+    // 좋아요 수 감소
+    public void decrementLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
+    }
+
+    public void incrementViewCount() {
+        this.viewCount++;
+    }
 }
