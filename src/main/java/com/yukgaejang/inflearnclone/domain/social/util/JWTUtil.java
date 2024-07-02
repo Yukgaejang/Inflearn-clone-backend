@@ -12,15 +12,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class JWTUtil {
 
-    @Value("${jwt.secret}")
-    private String secret;
+    private static SecretKey secretKey;
 
-    private SecretKey secretKey;
+    private final String secret = "abcde";
 
     @PostConstruct
-    public void init() {
+    private void init() {
+        setSecret(secret);
+    }
+
+    private static void setSecret(String secret) {
         try {
-            this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
+            secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
                     Jwts.SIG.HS256.key().build().getAlgorithm());
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid secret key", e);
