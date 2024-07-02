@@ -1,6 +1,7 @@
 package com.yukgaejang.inflearnclone.domain.social.util;
 
 import io.jsonwebtoken.Jwts;
+import jakarta.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import javax.crypto.SecretKey;
@@ -11,16 +12,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class JWTUtil {
 
-    private final SecretKey secretKey;
+    @Value("${jwt.secret}")
+    private String secret;
 
-    public JWTUtil(@Value("${jwt.secret}") String secret) {
+    private SecretKey secretKey;
+
+    @PostConstruct
+    public void init() {
         try {
             this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
                     Jwts.SIG.HS256.key().build().getAlgorithm());
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid secret key", e);
         }
-
     }
 
     public String getUsername(String token) {
