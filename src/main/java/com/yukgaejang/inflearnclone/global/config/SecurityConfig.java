@@ -72,9 +72,6 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/social/logout/**").authenticated()
-                        .requestMatchers("/mypage/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/board/**").authenticated()
                         .anyRequest().permitAll());
 
         return http.build();
