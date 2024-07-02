@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -61,22 +62,20 @@ public class SecurityConfig {
                 .httpBasic((auth) -> auth.disable());
 
         http
+                .authorizeHttpRequests((auth) -> auth
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/mypage/**")
+                        ).authenticated()
+                        .anyRequest().permitAll());
+
+        http
+                .oauth2Login(oauth -> oauth
+                        .userInfoEndpoint(c -> c.userService(customOAuth2UserService))
+                        .successHandler(customSuccessHandler));
+
+        http
                 .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
-        http
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/oauth2/authorization/kakao")
-                        .successHandler(customSuccessHandler)
-                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
-                                .userService(customOAuth2UserService)));
-
-
-        http
-                .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/social/logout/**").authenticated()
-                        .requestMatchers("/mypage/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/board/**").authenticated()
-                        .anyRequest().permitAll());
 
         return http.build();
     }
