@@ -12,10 +12,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -29,19 +27,6 @@ public class SecurityConfig {
     private final CustomSuccessHandler customSuccessHandler;
 
     private final CustomOAuth2UserService customOAuth2UserService;
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> {
-            web.ignoring()
-                    .requestMatchers(new AntPathRequestMatcher("/h2-console/**")) // H2 콘솔 접근 허용
-                    .requestMatchers(new AntPathRequestMatcher("/favicon.ico")) // favicon 요청 허용
-                    .requestMatchers(new AntPathRequestMatcher("/css/**")) // CSS 파일 요청 허용
-                    .requestMatchers(new AntPathRequestMatcher("/js/**")) // JS 파일 요청 허용
-                    .requestMatchers(new AntPathRequestMatcher("/img/**")) // 이미지 요청 허용
-                    .requestMatchers(new AntPathRequestMatcher("/lib/**")); // 라이브러리 요청 허용
-        };
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
