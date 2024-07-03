@@ -24,7 +24,7 @@ public class UsersService {
 
     @Transactional
     public UsersDto signup(UsersDto userDto) {
-        if (userRepository.findOneWithAuthoritiesByUsername(userDto.getUsername()).orElse(null) != null) {
+        if (userRepository.findOneWithAuthoritiesByEmail(userDto.getEmail()).orElse(null) != null) {
             throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
         }
 
@@ -33,7 +33,7 @@ public class UsersService {
                 .build();
 
         Users user = Users.builder()
-                .username(userDto.getUsername())
+                .email(userDto.getEmail())
                 .password(passwordEncoder.encode(userDto.getPassword()))
                 .nickname(userDto.getNickname())
                 .authorities(Collections.singleton(authority))
@@ -44,15 +44,15 @@ public class UsersService {
     }
 
     @Transactional(readOnly = true)
-    public UsersDto getUserWithAuthorities(String username) {
-        return UsersDto.from(userRepository.findOneWithAuthoritiesByUsername(username).orElse(null));
+    public UsersDto getUserWithAuthorities(String email) {
+        return UsersDto.from(userRepository.findOneWithAuthoritiesByEmail(email).orElse(null));
     }
 
     @Transactional(readOnly = true)
     public UsersDto getMyUserWithAuthorities() {
         return UsersDto.from(
                 SecurityUtil.getCurrentUsername()
-                        .flatMap(userRepository::findOneWithAuthoritiesByUsername)
+                        .flatMap(userRepository::findOneWithAuthoritiesByEmail)
                         .orElseThrow(() -> new NotFoundMemberException("Member not found"))
         );
     }
