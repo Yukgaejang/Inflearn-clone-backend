@@ -14,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -121,6 +123,7 @@ public class BoardService {
 
     // Board -> BoardListDto
     private BoardListDto convertToBoardListDto(Board board) {
+        String postAge = calculatePostAge(board.getCreatedAt());
         return BoardListDto.builder()
                 .id(board.getId())
                 .title(board.getTitle())
@@ -130,6 +133,7 @@ public class BoardService {
                 .userNickname(board.getUser().getNickname())
                 .likeCount(board.getLikeCount())
                 .viewCount(board.getViewCount())
+                .postAge(postAge)
                 .build();
     }
 
@@ -148,4 +152,27 @@ public class BoardService {
                 .tags(board.getTags().stream().map(Tag::getName).collect(Collectors.toSet()))
                 .build();
     }
+
+    private String calculatePostAge(LocalDateTime createdAt) {
+        LocalDateTime now = LocalDateTime.now();
+        Duration duration = Duration.between(createdAt, now);
+
+        long days = duration.toDays();
+        long hours = duration.toHours();
+        long minutes = duration.toMinutes();
+
+        if (days > 0) {
+            return days + "일";
+        } else if (hours > 0) {
+            return hours + "시간";
+        } else {
+            if (minutes == 0) {
+                return "방금";
+            }
+            else {
+                return minutes + "분";
+            }
+        }
+    }
+
 }
