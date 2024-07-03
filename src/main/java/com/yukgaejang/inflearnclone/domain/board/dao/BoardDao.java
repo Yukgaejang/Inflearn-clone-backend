@@ -10,4 +10,5 @@ public interface BoardDao extends JpaRepository<Board, Long> {
     Page<Board> findByCategoryOrderByCreatedAtDesc(String category, Pageable pageable);
     Page<Board> findByCategoryOrderByLikeCountDesc(String category, Pageable pageable);
     Page<Board> findByCategoryOrderByViewCountDesc(String category, Pageable pageable);
+    Page<Board> findByCategoryOrderByCommentCountDesc(String category, Pageable pageable);
 }

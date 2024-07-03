@@ -105,6 +105,9 @@ public class BoardService {
                 case "view":
                     boards = boardDao.findByCategoryOrderByViewCountDesc(category, pageable);
                     break;
+                case "comment":
+                    boards = boardDao.findByCategoryOrderByCommentCountDesc(category, pageable);
+                    break;
                 default:
                     boards = boardDao.findByCategoryOrderByCreatedAtDesc(category, pageable);
                     break;
