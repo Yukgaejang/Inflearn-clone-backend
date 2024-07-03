@@ -55,7 +55,7 @@ public class BoardApi {
 
     // 카테고리별 게시글 조회
     @GetMapping("/{category}")
-    @Operation(summary = "카테고리별 게시글 조회", description = "특정 카테고리의 게시글 조회")
+    @Operation(summary = "카테고리별 게시글 조회", description = "https://wooyong.shop/boards/category01?page=2&size=5 requestparam 설정 안할시 최신순")
     public ResponseEntity<PageResponseDto<BoardListDto>> getPostsByCategory(
             @PathVariable("category") String category,
             @RequestParam(value = "order", required = false) String order,
@@ -77,7 +77,7 @@ public class BoardApi {
 
     // 게시글 상세 조회
     @GetMapping("/{category}/{id}")
-    @Operation(summary = "게시글 상세 조회", description = "게시판의 특정 게시글 조회")
+    @Operation(summary = "게시글 상세 조회", description = "category, userid 필수 값/ 게시글 없을 경우 데이터 제공x")
     public ResponseEntity<Object> getPostById(
             @PathVariable("category") String category,
             @PathVariable("id") Long id
@@ -96,7 +96,7 @@ public class BoardApi {
 
     // 게시글 생성
     @PostMapping("/create")
-    @Operation(summary = "게시글 생성", description = "글쓰기")
+    @Operation(summary = "게시글 생성", description = "userid, title, content, category 필수값")
     public ResponseEntity<Object> createPost(
             @RequestBody CreatePostDto createPost
     ) {
@@ -141,7 +141,7 @@ public class BoardApi {
 
     // 게시글 수정
     @PutMapping("/{id}")
-    @Operation(summary = "게시글 수정", description = "게시글 수정")
+    @Operation(summary = "게시글 수정", description = "title, content, category, tag 만 수정 가능")
     public ResponseEntity<Object> updatePost(
             @PathVariable("id") Long id,
             @RequestBody CreatePostDto boardDetails
