@@ -100,6 +100,12 @@ public class BoardApi {
     public ResponseEntity<Object> createPost(
             @RequestBody CreatePostDto createPost
     ) {
+        try {
+            createPost.validate(); // 태그, 제목, 내용 유효성 검사
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
         Optional<User> userOptional = boardUserDao.findById(createPost.getUserId());
         if (userOptional.isEmpty()) {
             return ResponseEntity.badRequest().build();
@@ -140,6 +146,7 @@ public class BoardApi {
             @PathVariable("id") Long id,
             @RequestBody CreatePostDto boardDetails
     ) {
+
         Optional<Board> existingPost = boardService.getPostById(id);
         if (existingPost.isPresent()) {
             if (boardDetails.getTagNames().size() > 10) {
