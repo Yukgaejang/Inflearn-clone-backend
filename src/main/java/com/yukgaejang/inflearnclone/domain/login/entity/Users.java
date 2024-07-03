@@ -1,6 +1,7 @@
 package com.yukgaejang.inflearnclone.domain.login.entity;
 
 import com.yukgaejang.inflearnclone.domain.model.BaseEntity;
+import java.util.Arrays;
 import lombok.*;
 import jakarta.persistence.*;
 import java.util.Set;
@@ -21,11 +22,4 @@ public class Users extends BaseEntity {
 
     @Column(name = "nickname", length = 50)
     private String nickname;
-
-    @ManyToMany
-    @JoinTable(
-            name = "user_authority",
-            joinColumns = {@JoinColumn(name = "id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
-    private Set<Authority> authorities;
 }

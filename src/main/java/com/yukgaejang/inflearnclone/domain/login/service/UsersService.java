@@ -1,7 +1,6 @@
 package com.yukgaejang.inflearnclone.domain.login.service;
 
 import com.yukgaejang.inflearnclone.domain.login.dto.UsersDto;
-import com.yukgaejang.inflearnclone.domain.login.entity.Authority;
 import com.yukgaejang.inflearnclone.domain.login.entity.Users;
 import com.yukgaejang.inflearnclone.domain.login.exception.DuplicateMemberException;
 import com.yukgaejang.inflearnclone.domain.login.exception.NotFoundMemberException;
@@ -28,15 +27,10 @@ public class UsersService {
             throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
         }
 
-        Authority authority = Authority.builder()
-                .authorityName("ROLE_USER")
-                .build();
-
         Users user = Users.builder()
                 .email(userDto.getEmail())
                 .password(passwordEncoder.encode(userDto.getPassword()))
                 .nickname(userDto.getNickname())
-                .authorities(Collections.singleton(authority))
                 .build();
 
         return UsersDto.from(userRepository.save(user));

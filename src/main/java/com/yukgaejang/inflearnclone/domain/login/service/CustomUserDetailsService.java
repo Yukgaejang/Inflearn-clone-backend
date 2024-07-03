@@ -3,6 +3,7 @@ package com.yukgaejang.inflearnclone.domain.login.service;
 
 import com.yukgaejang.inflearnclone.domain.login.entity.Users;
 import com.yukgaejang.inflearnclone.domain.login.repository.UsersRepository;
+import java.util.ArrayList;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,12 +31,8 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException(email + " -> 데이터베이스에서 찾을 수 없습니다."));
     }
 
-    private org.springframework.security.core.userdetails.User createUser(String username, Users user) {
-
-        List<GrantedAuthority> grantedAuthorities = user.getAuthorities().stream()
-                .map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName()))
-                .collect(Collectors.toList());
-
+    private org.springframework.security.core.userdetails.User createUser(String email, Users user) {
+        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
         return new org.springframework.security.core.userdetails.User(user.getEmail(),
                 user.getPassword(),
                 grantedAuthorities);

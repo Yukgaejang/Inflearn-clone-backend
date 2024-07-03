@@ -23,17 +23,12 @@ public class UsersDto {
     @Column(name = "nickname", length = 50)
     private String nickname;
 
-    private Set<AuthorityDto> authorityDtoSet;
-
     public static UsersDto from(Users user) {
         if(user == null) return null;
 
         return UsersDto.builder()
                 .email(user.getEmail())
                 .nickname(user.getNickname())
-                .authorityDtoSet(user.getAuthorities().stream()
-                        .map(authority -> AuthorityDto.builder().authorityName(authority.getAuthorityName()).build())
-                        .collect(Collectors.toSet()))
                 .build();
     }
 }
