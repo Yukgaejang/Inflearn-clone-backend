@@ -37,7 +37,6 @@ public class UsersService {
                 .password(passwordEncoder.encode(userDto.getPassword()))
                 .nickname(userDto.getNickname())
                 .authorities(Collections.singleton(authority))
-                .activated(true)
                 .build();
 
         return UsersDto.from(userRepository.save(user));

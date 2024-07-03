@@ -22,9 +22,6 @@ public class Users extends BaseEntity {
     @Column(name = "nickname", length = 50)
     private String nickname;
 
-    @Column(name = "activated")
-    private boolean activated;
-
     @ManyToMany
     @JoinTable(
             name = "user_authority",
