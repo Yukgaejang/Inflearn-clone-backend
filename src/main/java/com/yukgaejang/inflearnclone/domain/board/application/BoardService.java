@@ -7,6 +7,7 @@ import com.yukgaejang.inflearnclone.domain.board.domain.Tag;
 import com.yukgaejang.inflearnclone.domain.board.dto.BoardDetailDto;
 import com.yukgaejang.inflearnclone.domain.board.dto.BoardDto;
 import com.yukgaejang.inflearnclone.domain.board.dto.BoardListDto;
+import com.yukgaejang.inflearnclone.domain.comment.dao.CommentDao;
 import com.yukgaejang.inflearnclone.domain.user.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,6 +32,9 @@ public class BoardService {
 
     @Autowired
     private HeartService heartService;
+
+    @Autowired
+    private CommentDao commentDao;
 
     public Page<BoardListDto> getAllPosts(Pageable pageable) {
         return boardDao.findAll(pageable).map(this::convertToBoardListDto);
@@ -62,11 +66,15 @@ public class BoardService {
     public void deletePost(Long id) {
         Board board = boardDao.findById(id).orElseThrow(() -> new IllegalArgumentException("Board not found with id: " + id));
 
+        // 자식 엔티티(Comment) 먼저 삭제
+        commentDao.deleteByBoard(board);
+
         // 자식 엔티티(Heart) 먼저 삭제
         heartDao.deleteByBoard(board);
 
         // 부모 엔티티(Board) 삭제
         boardDao.delete(board);
+
     }
 
     @Transactional
@@ -107,6 +115,7 @@ public class BoardService {
 
     // Board -> BoardDto
     public BoardDto convertToDTO(Board board) {
+        Long commentCount = commentDao.countByBoard(board);
         return BoardDto.builder()
                 .id(board.getId())
                 .createdAt(board.getCreatedAt())
@@ -116,6 +125,7 @@ public class BoardService {
                 .category(board.getCategory())
                 .likeCount(board.getLikeCount())
                 .viewCount(board.getViewCount())
+                .commentCount(commentCount)
                 .userNickname(board.getUser().getNickname())
                 .tags(board.getTags().stream().map(Tag::getName).collect(Collectors.toSet()))
                 .build();
@@ -123,6 +133,7 @@ public class BoardService {
 
     // Board -> BoardListDto
     private BoardListDto convertToBoardListDto(Board board) {
+        Long commentCount = commentDao.countByBoard(board); // 댓글 수 계산
         String postAge = calculatePostAge(board.getCreatedAt());
         return BoardListDto.builder()
                 .id(board.getId())
@@ -133,12 +144,14 @@ public class BoardService {
                 .userNickname(board.getUser().getNickname())
                 .likeCount(board.getLikeCount())
                 .viewCount(board.getViewCount())
+                .commentCount(commentCount)
                 .postAge(postAge)
                 .build();
     }
 
     // Board -> BoardDetailDto
     public BoardDetailDto convertToBoardDetailDto(Board board) {
+        Long commentCount = commentDao.countByBoard(board); // 댓글 수 계산
         return BoardDetailDto.builder()
                 .id(board.getId())
                 .createdAt(board.getCreatedAt())
@@ -148,6 +161,7 @@ public class BoardService {
                 .category(board.getCategory())
                 .likeCount(board.getLikeCount())
                 .viewCount(board.getViewCount())
+                .commentCount(commentCount)
                 .userNickname(board.getUser().getNickname())
                 .tags(board.getTags().stream().map(Tag::getName).collect(Collectors.toSet()))
                 .build();
