@@ -9,10 +9,11 @@ import com.yukgaejang.inflearnclone.domain.board.dto.BoardDto;
 import com.yukgaejang.inflearnclone.domain.board.dto.BoardListDto;
 import com.yukgaejang.inflearnclone.domain.user.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,8 +30,8 @@ public class BoardService {
     @Autowired
     private HeartService heartService;
 
-    public List<BoardListDto> getAllPosts() {
-        return boardDao.findAll().stream().map(this::convertToBoardListDto).collect(Collectors.toList());
+    public Page<BoardListDto> getAllPosts(Pageable pageable) {
+        return boardDao.findAll(pageable).map(this::convertToBoardListDto);
     }
 
     public Optional<BoardDetailDto> getPostDTOById(Long id) {
@@ -41,10 +42,8 @@ public class BoardService {
         return boardDao.findById(id);
     }
 
-    public List<BoardListDto> getPostsByCategory(String category) {
-        return boardDao.findByCategory(category).stream()
-                .map(this::convertToBoardListDto)
-                .collect(Collectors.toList());
+    public Page<BoardListDto> getPostsByCategory(String category, Pageable pageable) {
+        return boardDao.findByCategory(category, pageable).map(this::convertToBoardListDto);
     }
 
     public Board createPost(Board board, User user, String title, String content, String category, Set<Tag> tags) {
@@ -84,30 +83,27 @@ public class BoardService {
         boardDao.save(board);
     }
 
-    public List<BoardListDto> getPostsByCategory(String category, String order) {
-        List<Board> boards;
-        if (order == null) {
-            boards = boardDao.findByCategory(category);
+    public Page<BoardListDto> getPostsByCategory(String category, String order, Pageable pageable) {
+        Page<Board> boards;
+        if (order == null || order.equals("date")) {
+            boards = boardDao.findByCategoryOrderByCreatedAtDesc(category, pageable);
         } else {
             switch (order.toLowerCase()) {
                 case "like":
-                    boards = boardDao.findByCategoryOrderByLikeCountDesc(category);
+                    boards = boardDao.findByCategoryOrderByLikeCountDesc(category, pageable);
                     break;
                 case "view":
-                    boards = boardDao.findByCategoryOrderByViewCountDesc(category);
+                    boards = boardDao.findByCategoryOrderByViewCountDesc(category, pageable);
                     break;
-                case "date":
                 default:
-                    boards = boardDao.findByCategoryOrderByCreatedAtDesc(category);
+                    boards = boardDao.findByCategoryOrderByCreatedAtDesc(category, pageable);
                     break;
             }
         }
-        return boards.stream()
-                .map(this::convertToBoardListDto)
-                .collect(Collectors.toList());
+        return boards.map(this::convertToBoardListDto);
     }
 
-    //Board -> BoardDto
+    // Board -> BoardDto
     public BoardDto convertToDTO(Board board) {
         return BoardDto.builder()
                 .id(board.getId())
@@ -123,7 +119,7 @@ public class BoardService {
                 .build();
     }
 
-    //Board -> BoardListDto
+    // Board -> BoardListDto
     private BoardListDto convertToBoardListDto(Board board) {
         return BoardListDto.builder()
                 .id(board.getId())
@@ -137,7 +133,7 @@ public class BoardService {
                 .build();
     }
 
-    //Board -> BoardDetailDto
+    // Board -> BoardDetailDto
     public BoardDetailDto convertToBoardDetailDto(Board board) {
         return BoardDetailDto.builder()
                 .id(board.getId())

@@ -3,15 +3,15 @@ package com.yukgaejang.inflearnclone.domain.board.api;
 import com.yukgaejang.inflearnclone.domain.board.application.BoardService;
 import com.yukgaejang.inflearnclone.domain.board.dao.TagDao;
 import com.yukgaejang.inflearnclone.domain.board.dao.BoardUserDao;
+import com.yukgaejang.inflearnclone.domain.board.dto.*;
 import com.yukgaejang.inflearnclone.domain.user.domain.User;
-import com.yukgaejang.inflearnclone.domain.board.dto.BoardDetailDto;
-import com.yukgaejang.inflearnclone.domain.board.dto.BoardDto;
-import com.yukgaejang.inflearnclone.domain.board.dto.BoardListDto;
-import com.yukgaejang.inflearnclone.domain.board.dto.CreatePostDto;
 import com.yukgaejang.inflearnclone.domain.board.domain.Board;
 import com.yukgaejang.inflearnclone.domain.board.domain.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,29 +35,50 @@ public class BoardApi {
         this.boardUserDao = boardUserDao;
     }
 
-    // 게시글 전체 조회 -> 인프런에서 제공x
+    // 게시글 전체 조회 -> 인프런에서 제공 x
     @GetMapping("")
     @Operation(summary = "게시글 전체 조회", description = "게시판의 모든 게시글 조회")
-    public ResponseEntity<List<BoardListDto>> getAllPosts() {
-        List<BoardListDto> boards = boardService.getAllPosts();
-        return ResponseEntity.ok(boards);
+    public ResponseEntity<PageResponseDto<BoardListDto>> getAllPosts(Pageable pageable) {
+        Page<BoardListDto> boards = boardService.getAllPosts(pageable);
+        if (boards.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new PageResponseDto<>(0L, 0, 0, 0, List.of()));
+        }
+        PageResponseDto<BoardListDto> response = new PageResponseDto<>(
+                boards.getTotalElements(),
+                boards.getTotalPages(),
+                boards.getSize(),
+                boards.getNumber(),
+                boards.getContent()
+        );
+        return ResponseEntity.ok(response);
     }
 
     // 카테고리별 게시글 조회
     @GetMapping("/{category}")
     @Operation(summary = "카테고리별 게시글 조회", description = "특정 카테고리의 게시글 조회")
-    public ResponseEntity<List<BoardListDto>> getPostsByCategory(
+    public ResponseEntity<PageResponseDto<BoardListDto>> getPostsByCategory(
             @PathVariable("category") String category,
-            @RequestParam(value = "order", required = false) String order
+            @RequestParam(value = "order", required = false) String order,
+            Pageable pageable
     ) {
-        List<BoardListDto> boards = boardService.getPostsByCategory(category, order);
-        return ResponseEntity.ok(boards);
+        Page<BoardListDto> boardPage = boardService.getPostsByCategory(category, order, pageable);
+        if (boardPage.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new PageResponseDto<>(0L, 0, 0, 0, List.of()));
+        }
+        PageResponseDto<BoardListDto> response = new PageResponseDto<>(
+                boardPage.getTotalElements(),
+                boardPage.getTotalPages(),
+                boardPage.getSize(),
+                boardPage.getNumber(),
+                boardPage.getContent()
+        );
+        return ResponseEntity.ok(response);
     }
 
     // 게시글 상세 조회
     @GetMapping("/{category}/{id}")
     @Operation(summary = "게시글 상세 조회", description = "게시판의 특정 게시글 조회")
-    public ResponseEntity<BoardDetailDto> getPostById(
+    public ResponseEntity<Object> getPostById(
             @PathVariable("category") String category,
             @PathVariable("id") Long id
     ) {
@@ -68,9 +89,10 @@ public class BoardApi {
             BoardDetailDto boardDetailDto = boardService.convertToBoardDetailDto(board);
             return ResponseEntity.ok(boardDetailDto);
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("해당 게시글 없음");
         }
     }
+
 
     // 게시글 생성
     @PostMapping("/create")
