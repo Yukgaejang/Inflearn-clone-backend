@@ -1,11 +1,11 @@
 package com.yukgaejang.inflearnclone.domain.login.service;
 
-import com.yukgaejang.inflearnclone.domain.board.dao.UserDao;
 import com.yukgaejang.inflearnclone.domain.login.dto.SignupDto;
 import com.yukgaejang.inflearnclone.domain.login.entity.Authority;
 import com.yukgaejang.inflearnclone.domain.login.exception.DuplicateMemberException;
 import com.yukgaejang.inflearnclone.domain.login.exception.NotFoundMemberException;
 import com.yukgaejang.inflearnclone.domain.login.util.SecurityUtil;
+import com.yukgaejang.inflearnclone.domain.user.dao.UserDao;
 import com.yukgaejang.inflearnclone.domain.user.domain.User;
 import java.util.Collections;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,11 +13,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class UsersService {
+public class LoginUserService {
     private final UserDao userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UsersService(UserDao userRepository, PasswordEncoder passwordEncoder) {
+    public LoginUserService(UserDao userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
