@@ -6,6 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,6 +28,7 @@ public class TokenProvider implements InitializingBean {
     private final TokenProperties tokenProperties;
     private Key key;
 
+    @Autowired
     public TokenProvider(TokenProperties tokenProperties) {
         this.tokenProperties = tokenProperties;
     }
