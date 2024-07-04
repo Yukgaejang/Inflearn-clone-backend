@@ -36,9 +36,6 @@ public class TokenProvider implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
         String base64Secret = tokenProperties.getSecret();
-        if (base64Secret == null) {
-            throw new IllegalArgumentException("JWT secret cannot be null");
-        }
         byte[] keyBytes = Decoders.BASE64.decode(base64Secret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
