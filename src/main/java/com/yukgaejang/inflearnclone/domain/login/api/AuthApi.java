@@ -4,7 +4,7 @@ import com.yukgaejang.inflearnclone.domain.login.dto.LoginDto;
 import com.yukgaejang.inflearnclone.domain.login.dto.SignupDto;
 import com.yukgaejang.inflearnclone.domain.login.jwt.JwtFilter;
 import com.yukgaejang.inflearnclone.domain.login.jwt.TokenProvider;
-import com.yukgaejang.inflearnclone.domain.login.service.UsersService;
+import com.yukgaejang.inflearnclone.domain.login.service.LoginUserService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +23,11 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api")
 public class AuthApi {
-    private final UsersService userService;
+    private final LoginUserService userService;
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    public AuthApi(UsersService userService, TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
+    public AuthApi(LoginUserService userService, TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
         this.userService = userService;
         this.tokenProvider = tokenProvider;
         this.authenticationManagerBuilder = authenticationManagerBuilder;

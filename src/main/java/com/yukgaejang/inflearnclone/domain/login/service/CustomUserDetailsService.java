@@ -1,7 +1,7 @@
 package com.yukgaejang.inflearnclone.domain.login.service;
 
 
-import com.yukgaejang.inflearnclone.domain.board.dao.UserDao;
+import com.yukgaejang.inflearnclone.domain.user.dao.UserDao;
 import com.yukgaejang.inflearnclone.domain.user.domain.User;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
