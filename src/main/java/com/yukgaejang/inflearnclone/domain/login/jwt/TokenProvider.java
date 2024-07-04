@@ -3,10 +3,12 @@ package com.yukgaejang.inflearnclone.domain.login.jwt;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,25 +22,21 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+@Getter
+@Setter
 @Component
+@ConfigurationProperties(prefix = "jwt")
 public class TokenProvider implements InitializingBean {
 
     private final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
     private static final String AUTHORITIES_KEY = "auth";
-    private final TokenProperties tokenProperties;
+    private String secret;
+    private long tokenValidityInSeconds;
     private Key key;
-
-    @Autowired
-    public TokenProvider(TokenProperties tokenProperties) {
-        this.tokenProperties = tokenProperties;
-    }
 
     @Override
     public void afterPropertiesSet() {
-        String base64Secret = tokenProperties.getSecret();
-        if (base64Secret == null) {
-            base64Secret = "1zP7Jih6FTHRlgWIZ3WnoOOzbzM0OaZgavykOa6P5XqkS85UV0urz4HIW2ngZ5lbSjPdcsh2kDllOMvcWeX7MppUJbMVPmkZ6GbKJspO9MUuGQ";
-        }
+        String base64Secret = this.secret;
         byte[] keyBytes = Decoders.BASE64.decode(base64Secret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
@@ -49,7 +47,7 @@ public class TokenProvider implements InitializingBean {
                 .collect(Collectors.joining(","));
 
         long now = (new Date()).getTime();
-        Date validity = new Date(now + tokenProperties.getTokenValidityInSeconds() * 1000);
+        Date validity = new Date(now + this.tokenValidityInSeconds * 1000);
 
         return Jwts.builder()
                 .setSubject(authentication.getName())
