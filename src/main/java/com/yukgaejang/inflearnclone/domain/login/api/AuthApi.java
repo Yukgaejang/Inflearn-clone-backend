@@ -1,8 +1,7 @@
 package com.yukgaejang.inflearnclone.domain.login.api;
 
 import com.yukgaejang.inflearnclone.domain.login.dto.LoginDto;
-import com.yukgaejang.inflearnclone.domain.login.dto.TokenDto;
-import com.yukgaejang.inflearnclone.domain.login.dto.UsersDto;
+import com.yukgaejang.inflearnclone.domain.login.dto.SignupDto;
 import com.yukgaejang.inflearnclone.domain.login.jwt.JwtFilter;
 import com.yukgaejang.inflearnclone.domain.login.jwt.TokenProvider;
 import com.yukgaejang.inflearnclone.domain.login.service.UsersService;
@@ -23,19 +22,19 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
-public class AuthController {
+public class AuthApi {
     private final UsersService userService;
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    public AuthController(UsersService userService, TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
+    public AuthApi(UsersService userService, TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
         this.userService = userService;
         this.tokenProvider = tokenProvider;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@Valid @RequestBody UsersDto userDto) {
+    public ResponseEntity<String> signup(@Valid @RequestBody SignupDto userDto) {
         userService.signup(userDto);
         String jwt = generateToken(userDto.getEmail(), userDto.getPassword());
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -47,7 +46,6 @@ public class AuthController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<String> authenticate(@Valid @RequestBody LoginDto loginDto) {
-        // 로그인 처리
         try {
             String jwt = generateToken(loginDto.getEmail(), loginDto.getPassword());
             HttpHeaders httpHeaders = new HttpHeaders();

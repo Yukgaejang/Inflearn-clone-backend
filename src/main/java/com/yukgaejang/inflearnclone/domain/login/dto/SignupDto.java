@@ -3,7 +3,8 @@ package com.yukgaejang.inflearnclone.domain.login.dto;
 import com.yukgaejang.inflearnclone.domain.user.domain.User;
 import com.yukgaejang.inflearnclone.domain.user.dto.LoginType;
 import jakarta.persistence.Column;
-import jakarta.validation.constraints.Null;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.*;
 
 @Getter
@@ -11,7 +12,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UsersDto {
+public class SignupDto {
 
     @Column(name = "email", length = 50, unique = true)
     private String email;
@@ -24,12 +25,17 @@ public class UsersDto {
 
     private LoginType loginType;
 
-    public static UsersDto from(User user) {
+    private Set<AuthorityDto> authorityDtoSet;
+
+    public static SignupDto from(User user) {
         if(user == null) return null;
 
-        return UsersDto.builder()
+        return SignupDto.builder()
                 .email(user.getEmail())
                 .nickname(user.getNickname())
+                .authorityDtoSet(user.getAuthorities().stream()
+                        .map(authority -> AuthorityDto.builder().authorityName(authority.getAuthorityName()).build())
+                        .collect(Collectors.toSet()))
                 .loginType(user.getLoginType())
                 .build();
     }
