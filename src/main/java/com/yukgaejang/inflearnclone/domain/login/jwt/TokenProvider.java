@@ -6,7 +6,6 @@ import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,20 +24,16 @@ public class TokenProvider implements InitializingBean {
 
     private final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
     private static final String AUTHORITIES_KEY = "auth";
-    private final String secret;
-    private final long tokenValidityInMilliseconds;
+    private final TokenProperties tokenProperties;
     private Key key;
 
-    public TokenProvider(
-            @Value("${jwt.secret}") String secret,
-            @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds) {
-        this.secret = secret;
-        this.tokenValidityInMilliseconds = tokenValidityInSeconds * 1000;
+    public TokenProvider(TokenProperties tokenProperties) {
+        this.tokenProperties = tokenProperties;
     }
 
     @Override
     public void afterPropertiesSet() {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        byte[] keyBytes = Decoders.BASE64.decode(tokenProperties.getSecret());
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -48,7 +43,7 @@ public class TokenProvider implements InitializingBean {
                 .collect(Collectors.joining(","));
 
         long now = (new Date()).getTime();
-        Date validity = new Date(now + this.tokenValidityInMilliseconds);
+        Date validity = new Date(now + tokenProperties.getTokenValidityInSeconds() * 1000);
 
         return Jwts.builder()
                 .setSubject(authentication.getName())
