@@ -61,16 +61,16 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
 
 
-//                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
-//                .exceptionHandling(exceptionHandling -> exceptionHandling
-//                        .accessDeniedHandler(jwtAccessDeniedHandler)
-//                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-//                )
-//                .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-//                        .requestMatchers("/mypage").authenticated()
-//                        .requestMatchers(HttpMethod.POST, "/board/**").authenticated()
-//                        .anyRequest().permitAll()
-//                )
+                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .accessDeniedHandler(jwtAccessDeniedHandler)
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                )
+                .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+                        .requestMatchers("/mypage").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/board/**").authenticated()
+                        .anyRequest().permitAll()
+                )
 
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -79,9 +79,9 @@ public class SecurityConfig {
                 .headers(headers ->
                         headers.frameOptions(FrameOptionsConfig::sameOrigin
                         )
-                );
+                )
 
-//                .with(new JwtSecurityConfig(tokenProvider), customizer -> {});
+                .with(new JwtSecurityConfig(tokenProvider), customizer -> {});
 
         return http.build();
 
