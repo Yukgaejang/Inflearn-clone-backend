@@ -49,7 +49,6 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer configure(){
         return (web) -> web.ignoring()
-//                .requestMatchers(new AntPathRequestMatcher("/h2-console/**"))
                 .requestMatchers(new AntPathRequestMatcher("/favicon.ico"));
     }
 
@@ -87,7 +86,6 @@ public class SecurityConfig {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-//                // enable h2-console
                 .headers(headers ->
                         headers.frameOptions(options ->
                                 options.sameOrigin()

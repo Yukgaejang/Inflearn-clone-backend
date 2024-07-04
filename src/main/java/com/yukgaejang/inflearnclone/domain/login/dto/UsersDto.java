@@ -1,11 +1,10 @@
 package com.yukgaejang.inflearnclone.domain.login.dto;
 
-import com.yukgaejang.inflearnclone.domain.login.entity.Users;
+import com.yukgaejang.inflearnclone.domain.user.domain.User;
+import com.yukgaejang.inflearnclone.domain.user.dto.LoginType;
 import jakarta.persistence.Column;
-import java.util.stream.Collectors;
+import jakarta.validation.constraints.Null;
 import lombok.*;
-
-import java.util.Set;
 
 @Getter
 @Setter
@@ -23,12 +22,15 @@ public class UsersDto {
     @Column(name = "nickname", length = 50)
     private String nickname;
 
-    public static UsersDto from(Users user) {
+    private LoginType loginType;
+
+    public static UsersDto from(User user) {
         if(user == null) return null;
 
         return UsersDto.builder()
                 .email(user.getEmail())
                 .nickname(user.getNickname())
+                .loginType(user.getLoginType())
                 .build();
     }
 }

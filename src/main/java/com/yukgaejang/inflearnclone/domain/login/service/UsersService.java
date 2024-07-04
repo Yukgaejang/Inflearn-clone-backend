@@ -1,22 +1,22 @@
 package com.yukgaejang.inflearnclone.domain.login.service;
 
+import com.yukgaejang.inflearnclone.domain.board.dao.UserDao;
 import com.yukgaejang.inflearnclone.domain.login.dto.UsersDto;
-import com.yukgaejang.inflearnclone.domain.login.entity.Users;
 import com.yukgaejang.inflearnclone.domain.login.exception.DuplicateMemberException;
 import com.yukgaejang.inflearnclone.domain.login.exception.NotFoundMemberException;
-import com.yukgaejang.inflearnclone.domain.login.repository.UsersRepository;
 import com.yukgaejang.inflearnclone.domain.login.util.SecurityUtil;
-import java.util.Collections;
+import com.yukgaejang.inflearnclone.domain.user.domain.User;
+import com.yukgaejang.inflearnclone.domain.user.dto.LoginType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UsersService {
-    private final UsersRepository userRepository;
+    private final UserDao userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UsersService(UsersRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UsersService(UserDao userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -27,10 +27,11 @@ public class UsersService {
             throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
         }
 
-        Users user = Users.builder()
+        User user = User.builder()
                 .email(userDto.getEmail())
                 .password(passwordEncoder.encode(userDto.getPassword()))
                 .nickname(userDto.getNickname())
+                .loginType(userDto.getLoginType())
                 .build();
 
         return UsersDto.from(userRepository.save(user));

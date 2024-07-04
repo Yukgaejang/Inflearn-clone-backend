@@ -4,19 +4,31 @@ import com.yukgaejang.inflearnclone.domain.board.domain.Board;
 import com.yukgaejang.inflearnclone.domain.model.BaseEntity;
 import com.yukgaejang.inflearnclone.domain.user.dto.LoginType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Null;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Set;
+import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "users")
 public class User extends BaseEntity {
 
     @Column(unique = true)
     private String nickname;
+
+    @Column(name = "password", length = 100)
+    private String password;
 
     @Column(unique = true)
     private String email;
