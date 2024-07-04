@@ -3,7 +3,6 @@ package com.yukgaejang.inflearnclone.domain.login.config;
 import com.yukgaejang.inflearnclone.domain.login.api.AuthApi;
 import com.yukgaejang.inflearnclone.domain.login.jwt.JwtAccessDeniedHandler;
 import com.yukgaejang.inflearnclone.domain.login.jwt.JwtAuthenticationEntryPoint;
-import com.yukgaejang.inflearnclone.domain.login.jwt.TokenProperties;
 import com.yukgaejang.inflearnclone.domain.login.jwt.TokenProvider;
 import com.yukgaejang.inflearnclone.domain.login.service.LoginUserService;
 import com.yukgaejang.inflearnclone.domain.user.dao.UserDao;
@@ -15,11 +14,6 @@ import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 public class AppConfig {
-
-    @Bean
-    public TokenProvider tokenProvider(TokenProperties tokenProperties) {
-        return new TokenProvider(tokenProperties);
-    }
 
     @Bean
     public SecurityConfig securityConfig(
