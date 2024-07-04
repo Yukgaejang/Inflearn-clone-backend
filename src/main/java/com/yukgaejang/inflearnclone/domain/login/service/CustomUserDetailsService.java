@@ -5,6 +5,7 @@ import com.yukgaejang.inflearnclone.domain.user.dao.UserDao;
 import com.yukgaejang.inflearnclone.domain.user.domain.User;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +20,7 @@ import java.util.List;
 public class CustomUserDetailsService implements UserDetailsService {
     private final UserDao userRepository;
 
+    @Autowired
     public CustomUserDetailsService(UserDao userRepository) {
         this.userRepository = userRepository;
     }

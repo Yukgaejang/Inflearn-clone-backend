@@ -8,6 +8,7 @@ import com.yukgaejang.inflearnclone.domain.login.util.SecurityUtil;
 import com.yukgaejang.inflearnclone.domain.user.dao.UserDao;
 import com.yukgaejang.inflearnclone.domain.user.domain.User;
 import java.util.Collections;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ public class LoginUserService {
     private final UserDao userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Autowired
     public LoginUserService(UserDao userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;

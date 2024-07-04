@@ -28,6 +28,7 @@ public class TokenProvider implements InitializingBean {
     private final TokenProperties tokenProperties;
     private Key key;
 
+    @Autowired
     public TokenProvider(TokenProperties tokenProperties) {
         this.tokenProperties = tokenProperties;
     }
