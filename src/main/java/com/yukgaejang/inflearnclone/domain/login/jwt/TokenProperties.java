@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 @Setter
 @Getter
-@ConfigurationProperties(prefix = "jwt")
 @Component
+@ConfigurationProperties(prefix = "jwt")
 public class TokenProperties {
     private String secret;
     private long tokenValidityInSeconds;
