@@ -21,6 +21,7 @@ public class BoardDetailDto {
     private String category;
     private Long likeCount;
     private Long viewCount;
+    private Long commentCount;
     private String userNickname;
     private Set<String> tags;
 }
