@@ -2,7 +2,7 @@ package com.yukgaejang.inflearnclone.domain.board.api;
 
 import com.yukgaejang.inflearnclone.domain.board.application.BoardService;
 import com.yukgaejang.inflearnclone.domain.board.dao.TagDao;
-import com.yukgaejang.inflearnclone.domain.board.dao.UserDao;
+import com.yukgaejang.inflearnclone.domain.board.dao.DoardUserDao;
 import com.yukgaejang.inflearnclone.domain.user.domain.User;
 import com.yukgaejang.inflearnclone.domain.board.dto.BoardDetailDto;
 import com.yukgaejang.inflearnclone.domain.board.dto.BoardDto;
@@ -26,13 +26,13 @@ public class BoardApi {
 
     private final BoardService boardService;
     private final TagDao tagDao;
-    private final UserDao userDao;
+    private final DoardUserDao doardUserDao;
 
     @Autowired
-    public BoardApi(BoardService boardService, TagDao tagDao, UserDao userDao) {
+    public BoardApi(BoardService boardService, TagDao tagDao, DoardUserDao doardUserDao) {
         this.boardService = boardService;
         this.tagDao = tagDao;
-        this.userDao = userDao;
+        this.doardUserDao = doardUserDao;
     }
 
     // 게시글 전체 조회 -> 인프런에서 제공x
@@ -78,7 +78,7 @@ public class BoardApi {
     public ResponseEntity<Object> createPost(
             @RequestBody CreatePostDto createPost
     ) {
-        Optional<User> userOptional = userDao.findById(createPost.getUserId());
+        Optional<User> userOptional = doardUserDao.findById(createPost.getUserId());
         if (userOptional.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
@@ -158,7 +158,7 @@ public class BoardApi {
             @PathVariable("id") Long id,
             @RequestParam Long userId
     ) {
-        Optional<User> userOptional = userDao.findById(userId);
+        Optional<User> userOptional = doardUserDao.findById(userId);
         if (userOptional.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }

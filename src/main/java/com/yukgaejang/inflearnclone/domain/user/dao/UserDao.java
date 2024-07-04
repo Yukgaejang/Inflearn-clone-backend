@@ -1,4 +1,4 @@
-package com.yukgaejang.inflearnclone.domain.board.dao;
+package com.yukgaejang.inflearnclone.domain.user.dao;
 
 import com.yukgaejang.inflearnclone.domain.user.domain.User;
 import java.util.Optional;
