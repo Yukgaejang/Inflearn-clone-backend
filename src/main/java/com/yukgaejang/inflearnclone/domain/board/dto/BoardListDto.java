@@ -17,7 +17,9 @@ public class BoardListDto {
     private String category;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String postAge;
     private Long likeCount;
     private Long viewCount;
+    private Long commentCount;
     private String userNickname;
 }

@@ -31,6 +31,9 @@ public class Board extends BaseEntity {
     @Column(nullable = false)
     private Long viewCount = 0L;
 
+    @Column(nullable = false)
+    private Long commentCount = 0L;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -52,6 +55,7 @@ public class Board extends BaseEntity {
         this.tags = tags;
         this.likeCount = 0L;
         this.viewCount = 0L;
+        this.commentCount = 0L;
     }
 
     // Post 생성
@@ -63,6 +67,7 @@ public class Board extends BaseEntity {
         this.tags = tags;
         this.likeCount = 0L;
         this.viewCount = 0L;
+        this.commentCount = 0L;
     }
 
     // Post 수정
@@ -85,7 +90,20 @@ public class Board extends BaseEntity {
         }
     }
 
+    //조회수 증가
     public void incrementViewCount() {
         this.viewCount++;
+    }
+
+    // 댓글 수 증가
+    public void incrementCommentCount() {
+        this.commentCount++;
+    }
+
+    // 댓글 수 감소
+    public void decrementCommentCount() {
+        if (this.commentCount > 0) {
+            this.commentCount--;
+        }
     }
 }

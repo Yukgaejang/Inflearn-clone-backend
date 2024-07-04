@@ -7,12 +7,16 @@ import com.yukgaejang.inflearnclone.domain.board.domain.Tag;
 import com.yukgaejang.inflearnclone.domain.board.dto.BoardDetailDto;
 import com.yukgaejang.inflearnclone.domain.board.dto.BoardDto;
 import com.yukgaejang.inflearnclone.domain.board.dto.BoardListDto;
+import com.yukgaejang.inflearnclone.domain.comment.dao.CommentDao;
 import com.yukgaejang.inflearnclone.domain.user.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,8 +33,11 @@ public class BoardService {
     @Autowired
     private HeartService heartService;
 
-    public List<BoardListDto> getAllPosts() {
-        return boardDao.findAll().stream().map(this::convertToBoardListDto).collect(Collectors.toList());
+    @Autowired
+    private CommentDao commentDao;
+
+    public Page<BoardListDto> getAllPosts(Pageable pageable) {
+        return boardDao.findAll(pageable).map(this::convertToBoardListDto);
     }
 
     public Optional<BoardDetailDto> getPostDTOById(Long id) {
@@ -41,10 +48,8 @@ public class BoardService {
         return boardDao.findById(id);
     }
 
-    public List<BoardListDto> getPostsByCategory(String category) {
-        return boardDao.findByCategory(category).stream()
-                .map(this::convertToBoardListDto)
-                .collect(Collectors.toList());
+    public Page<BoardListDto> getPostsByCategory(String category, Pageable pageable) {
+        return boardDao.findByCategory(category, pageable).map(this::convertToBoardListDto);
     }
 
     public Board createPost(Board board, User user, String title, String content, String category, Set<Tag> tags) {
@@ -61,11 +66,15 @@ public class BoardService {
     public void deletePost(Long id) {
         Board board = boardDao.findById(id).orElseThrow(() -> new IllegalArgumentException("Board not found with id: " + id));
 
+        // 자식 엔티티(Comment) 먼저 삭제
+        commentDao.deleteByBoard(board);
+
         // 자식 엔티티(Heart) 먼저 삭제
         heartDao.deleteByBoard(board);
 
         // 부모 엔티티(Board) 삭제
         boardDao.delete(board);
+
     }
 
     @Transactional
@@ -84,31 +93,32 @@ public class BoardService {
         boardDao.save(board);
     }
 
-    public List<BoardListDto> getPostsByCategory(String category, String order) {
-        List<Board> boards;
-        if (order == null) {
-            boards = boardDao.findByCategory(category);
+    public Page<BoardListDto> getPostsByCategory(String category, String order, Pageable pageable) {
+        Page<Board> boards;
+        if (order == null || order.equals("date")) {
+            boards = boardDao.findByCategoryOrderByCreatedAtDesc(category, pageable);
         } else {
             switch (order.toLowerCase()) {
                 case "like":
-                    boards = boardDao.findByCategoryOrderByLikeCountDesc(category);
+                    boards = boardDao.findByCategoryOrderByLikeCountDesc(category, pageable);
                     break;
                 case "view":
-                    boards = boardDao.findByCategoryOrderByViewCountDesc(category);
+                    boards = boardDao.findByCategoryOrderByViewCountDesc(category, pageable);
                     break;
-                case "date":
+                case "comment":
+                    boards = boardDao.findByCategoryOrderByCommentCountDesc(category, pageable);
+                    break;
                 default:
-                    boards = boardDao.findByCategoryOrderByCreatedAtDesc(category);
+                    boards = boardDao.findByCategoryOrderByCreatedAtDesc(category, pageable);
                     break;
             }
         }
-        return boards.stream()
-                .map(this::convertToBoardListDto)
-                .collect(Collectors.toList());
+        return boards.map(this::convertToBoardListDto);
     }
 
-    //Board -> BoardDto
+    // Board -> BoardDto
     public BoardDto convertToDTO(Board board) {
+        Long commentCount = commentDao.countByBoard(board);
         return BoardDto.builder()
                 .id(board.getId())
                 .createdAt(board.getCreatedAt())
@@ -118,13 +128,16 @@ public class BoardService {
                 .category(board.getCategory())
                 .likeCount(board.getLikeCount())
                 .viewCount(board.getViewCount())
+                .commentCount(commentCount)
                 .userNickname(board.getUser().getNickname())
                 .tags(board.getTags().stream().map(Tag::getName).collect(Collectors.toSet()))
                 .build();
     }
 
-    //Board -> BoardListDto
+    // Board -> BoardListDto
     private BoardListDto convertToBoardListDto(Board board) {
+        Long commentCount = commentDao.countByBoard(board); // 댓글 수 계산
+        String postAge = calculatePostAge(board.getCreatedAt());
         return BoardListDto.builder()
                 .id(board.getId())
                 .title(board.getTitle())
@@ -134,11 +147,14 @@ public class BoardService {
                 .userNickname(board.getUser().getNickname())
                 .likeCount(board.getLikeCount())
                 .viewCount(board.getViewCount())
+                .commentCount(commentCount)
+                .postAge(postAge)
                 .build();
     }
 
-    //Board -> BoardDetailDto
+    // Board -> BoardDetailDto
     public BoardDetailDto convertToBoardDetailDto(Board board) {
+        Long commentCount = commentDao.countByBoard(board); // 댓글 수 계산
         return BoardDetailDto.builder()
                 .id(board.getId())
                 .createdAt(board.getCreatedAt())
@@ -148,8 +164,32 @@ public class BoardService {
                 .category(board.getCategory())
                 .likeCount(board.getLikeCount())
                 .viewCount(board.getViewCount())
+                .commentCount(commentCount)
                 .userNickname(board.getUser().getNickname())
                 .tags(board.getTags().stream().map(Tag::getName).collect(Collectors.toSet()))
                 .build();
     }
+
+    private String calculatePostAge(LocalDateTime createdAt) {
+        LocalDateTime now = LocalDateTime.now();
+        Duration duration = Duration.between(createdAt, now);
+
+        long days = duration.toDays();
+        long hours = duration.toHours();
+        long minutes = duration.toMinutes();
+
+        if (days > 0) {
+            return days + "일";
+        } else if (hours > 0) {
+            return hours + "시간";
+        } else {
+            if (minutes == 0) {
+                return "방금";
+            }
+            else {
+                return minutes + "분";
+            }
+        }
+    }
+
 }
