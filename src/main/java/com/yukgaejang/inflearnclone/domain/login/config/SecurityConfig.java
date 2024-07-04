@@ -4,6 +4,7 @@ import com.yukgaejang.inflearnclone.domain.login.jwt.JwtAccessDeniedHandler;
 import com.yukgaejang.inflearnclone.domain.login.jwt.JwtAuthenticationEntryPoint;
 import com.yukgaejang.inflearnclone.domain.login.jwt.JwtSecurityConfig;
 import com.yukgaejang.inflearnclone.domain.login.jwt.TokenProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -32,6 +33,7 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
+    @Autowired
     public SecurityConfig(
             TokenProvider tokenProvider,
             CorsFilter corsFilter,
