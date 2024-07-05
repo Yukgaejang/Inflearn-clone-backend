@@ -30,8 +30,14 @@ public class LoginUserService {
             throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
         }
 
+        String authorityType = userDto.getAuthorityType();
+
+        if (authorityType == null || !authorityType.equals("ROLE_ADMIN")) {
+            authorityType = "ROLE_USER";
+        }
+
         Authority authority = Authority.builder()
-                .authorityName("ROLE_USER")
+                .authorityName(authorityType)
                 .build();
 
         User user = User.builder()
@@ -43,6 +49,11 @@ public class LoginUserService {
                 .build();
 
         return SignupDto.from(userRepository.save(user));
+    }
+
+    @Transactional
+    public void deleteUser(String email) {
+        userRepository.deleteByEmail(email);
     }
 
     @Transactional(readOnly = true)

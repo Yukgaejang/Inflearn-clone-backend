@@ -25,6 +25,8 @@ public class SignupDto {
 
     private LoginType loginType;
 
+    private String authorityType;
+
     private Set<AuthorityDto> authorityDtoSet;
 
     public static SignupDto from(User user) {
