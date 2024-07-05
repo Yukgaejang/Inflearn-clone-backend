@@ -5,6 +5,7 @@ import com.yukgaejang.inflearnclone.domain.login.dto.SignupDto;
 import com.yukgaejang.inflearnclone.domain.login.jwt.JwtFilter;
 import com.yukgaejang.inflearnclone.domain.login.jwt.TokenProvider;
 import com.yukgaejang.inflearnclone.domain.login.service.LoginUserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,17 +24,19 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class AuthApi {
+
     private final LoginUserService userService;
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    @Autowired
-    public AuthApi(LoginUserService userService, TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
-        this.userService = userService;
-        this.tokenProvider = tokenProvider;
-        this.authenticationManagerBuilder = authenticationManagerBuilder;
-    }
+    //@Autowired
+    //public AuthApi(LoginUserService userService, TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
+    //    this.userService = userService;
+    //    this.tokenProvider = tokenProvider;
+    //    this.authenticationManagerBuilder = authenticationManagerBuilder;
+    // }
 
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@Valid @RequestBody SignupDto userDto) {
