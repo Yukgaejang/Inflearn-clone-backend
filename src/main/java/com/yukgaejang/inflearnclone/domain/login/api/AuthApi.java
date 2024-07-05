@@ -6,6 +6,8 @@ import com.yukgaejang.inflearnclone.domain.login.jwt.JwtFilter;
 import com.yukgaejang.inflearnclone.domain.login.jwt.TokenProvider;
 import com.yukgaejang.inflearnclone.domain.login.service.LoginUserService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,7 +27,7 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api")
 public class AuthApi {
-
+    private final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
     private final LoginUserService userService;
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -69,7 +71,8 @@ public class AuthApi {
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        return tokenProvider.createToken(authentication);
+        String token = tokenProvider.createToken(authentication);
+        logger.info("token > "+ token);
+        return token;
     }
 }
