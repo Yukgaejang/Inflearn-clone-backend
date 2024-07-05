@@ -1,4 +1,4 @@
-package com.yukgaejang.inflearnclone.domain.login.service;
+package com.yukgaejang.inflearnclone.domain.login.application;
 
 import com.yukgaejang.inflearnclone.domain.login.dto.SignupDto;
 import com.yukgaejang.inflearnclone.domain.login.entity.Authority;

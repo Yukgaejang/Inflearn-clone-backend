@@ -1,10 +1,10 @@
 package com.yukgaejang.inflearnclone.domain.login.api;
 
+import com.yukgaejang.inflearnclone.domain.login.application.LoginUserService;
 import com.yukgaejang.inflearnclone.domain.login.dto.LoginDto;
 import com.yukgaejang.inflearnclone.domain.login.dto.SignupDto;
 import com.yukgaejang.inflearnclone.domain.login.jwt.JwtFilter;
 import com.yukgaejang.inflearnclone.domain.login.jwt.TokenProvider;
-import com.yukgaejang.inflearnclone.domain.login.service.LoginUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
