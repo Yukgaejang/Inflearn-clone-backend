@@ -24,19 +24,18 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
-@RequiredArgsConstructor
 public class AuthApi {
 
     private final LoginUserService userService;
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    //@Autowired
-    //public AuthApi(LoginUserService userService, TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
-    //    this.userService = userService;
-    //    this.tokenProvider = tokenProvider;
-    //    this.authenticationManagerBuilder = authenticationManagerBuilder;
-    // }
+    @Autowired
+    public AuthApi(LoginUserService userService, TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
+        this.userService = userService;
+        this.tokenProvider = tokenProvider;
+        this.authenticationManagerBuilder = authenticationManagerBuilder;
+    }
 
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@Valid @RequestBody SignupDto userDto) {
