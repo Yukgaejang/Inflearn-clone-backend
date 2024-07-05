@@ -31,7 +31,8 @@ public class AuthApi {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @Autowired
-    public AuthApi(LoginUserService userService, TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
+    public AuthApi(LoginUserService userService, TokenProvider tokenProvider,
+                   AuthenticationManagerBuilder authenticationManagerBuilder) {
         this.userService = userService;
         this.tokenProvider = tokenProvider;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
@@ -77,7 +78,8 @@ public class AuthApi {
             userService.deleteUser(email);
             return ResponseEntity.ok().body("User deletion success");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User deletion failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("User deletion failed: " + e.getMessage());
         }
     }
 

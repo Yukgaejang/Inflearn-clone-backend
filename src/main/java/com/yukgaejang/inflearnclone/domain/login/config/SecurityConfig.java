@@ -52,16 +52,15 @@ public class SecurityConfig {
     }
 
     @Bean
-    public WebSecurityCustomizer configure(){
+    public WebSecurityCustomizer configure() {
         return (web) -> web.ignoring()
                 .requestMatchers(new AntPathRequestMatcher("/favicon.ico"));
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-
 
 //                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
 //                .exceptionHandling(exceptionHandling -> exceptionHandling
