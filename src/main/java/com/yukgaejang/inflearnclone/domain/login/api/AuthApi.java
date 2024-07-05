@@ -73,6 +73,7 @@ public class AuthApi {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = tokenProvider.createToken(authentication);
         logger.info("token > "+ token);
+        System.out.println("token > " + token);
         return token;
     }
 }
