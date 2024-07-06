@@ -5,6 +5,7 @@ import com.yukgaejang.inflearnclone.domain.user.domain.User;
 import com.yukgaejang.inflearnclone.domain.user.dto.LoginType;
 import com.yukgaejang.inflearnclone.global.config.QueryDslConfig;
 import jakarta.persistence.EntityManager;
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -45,7 +46,7 @@ class CommentTest {
 
 
     @Test
-    @DisplayName("저장 테스트")
+    @DisplayName("저장 성공 테스트")
     public void save() {
         // given
         Comment comment = Comment.builder()
@@ -60,6 +61,23 @@ class CommentTest {
         // then
         Assertions.assertTrue(em.contains(comment));
 
+    }
+
+    @Test
+    @DisplayName("저장 실패 테스트 - 내용이 null인 경우")
+    public void shouldThrowExceptionContentNegative() {
+        // given
+        Comment comment = Comment.builder()
+            .content(null)
+            .board(board)
+            .user(user)
+            .build();
+
+        // when
+
+        // then
+        Assertions.assertThrowsExactly(ConstraintViolationException.class,
+            () -> em.persist(comment));
     }
 
 }
