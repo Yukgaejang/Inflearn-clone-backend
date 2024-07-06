@@ -1,6 +1,7 @@
 package com.yukgaejang.inflearnclone.domain.comment.domain;
 
 import com.yukgaejang.inflearnclone.domain.board.domain.Board;
+import com.yukgaejang.inflearnclone.domain.comment.dto.BoardUpdateRequest;
 import com.yukgaejang.inflearnclone.domain.model.BaseEntity;
 import com.yukgaejang.inflearnclone.domain.user.domain.User;
 import jakarta.persistence.CascadeType;
@@ -53,4 +54,9 @@ public class Comment extends BaseEntity {
     }
 
 
+    public void update(BoardUpdateRequest request) {
+        if (!this.content.equals(request.getContent())) {
+            this.content = request.getContent();
+        }
+    }
 }

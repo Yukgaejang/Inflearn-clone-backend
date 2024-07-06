@@ -8,8 +8,11 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserDao extends JpaRepository<User, Long> {
+
     @EntityGraph(attributePaths = "authorities")
     Optional<User> findOneWithAuthoritiesByEmail(String email);
 
     void deleteByEmail(String email);
+
+    Optional<User> findByEmail(String email);
 }
