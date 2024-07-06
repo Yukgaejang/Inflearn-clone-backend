@@ -60,11 +60,11 @@ public class BoardApi {
 
     @GetMapping("/search")
     @Operation(summary = "게시글 검색 조회", description = "키워드와 카테고리 별 검색 조회")
-    public ResponseEntity<ApiResponse<List<BoardSearchResponse>>> searchBoard(
+    public ResponseEntity<ApiResponse<Page<BoardSearchResponse>>> searchBoard(
         @RequestParam(required = false) String keyword,
         @RequestParam(required = false) List<String> tags,
         @PageableDefault Pageable pageable) {
-        List<BoardSearchResponse> response = boardService.search(keyword, tags, pageable);
+        Page<BoardSearchResponse> response = boardService.search(keyword, tags, pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 

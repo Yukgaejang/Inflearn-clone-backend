@@ -1,6 +1,7 @@
 package com.yukgaejang.inflearnclone.domain.board.dao;
 
 import com.yukgaejang.inflearnclone.domain.board.domain.Board;
+import com.yukgaejang.inflearnclone.domain.board.dto.BoardSearchResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface BoardDao extends JpaRepository<Board, Long>, BoardCustomDao {
+
+    @Override
+    Page<BoardSearchResponse> search(String keyword, List<String> tags, Pageable pageable);
 
     Page<Board> findByCategory(String category, Pageable pageable);
 

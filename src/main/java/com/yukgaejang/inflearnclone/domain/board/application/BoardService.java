@@ -37,7 +37,7 @@ public class BoardService {
     @Autowired
     private CommentDao commentDao;
 
-    public List<BoardSearchResponse> search(String keyword, List<String> tags, Pageable pageable) {
+    public Page<BoardSearchResponse> search(String keyword, List<String> tags, Pageable pageable) {
         return boardDao.search(keyword, tags, pageable);
     }
 

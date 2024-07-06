@@ -10,6 +10,8 @@ import com.yukgaejang.inflearnclone.domain.board.dto.BoardSearchResponse;
 import com.yukgaejang.inflearnclone.domain.board.dto.QBoardSearchResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 @RequiredArgsConstructor
@@ -18,7 +20,7 @@ public class BoardDaoImpl implements BoardCustomDao {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<BoardSearchResponse> search(String keyword, List<String> requestTag,
+    public Page<BoardSearchResponse> search(String keyword, List<String> requestTag,
         Pageable pageable) {
         List<Tag> tags = null;
 
@@ -47,7 +49,27 @@ public class BoardDaoImpl implements BoardCustomDao {
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
-        return fetch;
+
+        long count = searchForCount(keyword, requestTag);
+
+        return new PageImpl<>(fetch, pageable, count);
+    }
+
+    private long searchForCount(String keyword, List<String> requestTag) {
+        Long count = queryFactory.select(
+                board.count()
+            )
+            .from(board)
+            .where(
+                titleContains(keyword)
+            )
+            .fetchOne();
+
+        if (count == null) {
+            count = 0L;
+        }
+
+        return count;
     }
 
     private BooleanExpression titleContains(String keyword) {
