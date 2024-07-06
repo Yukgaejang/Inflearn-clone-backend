@@ -1,5 +1,6 @@
 package com.yukgaejang.inflearnclone.domain.user.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.yukgaejang.inflearnclone.domain.board.domain.Board;
 import com.yukgaejang.inflearnclone.domain.login.entity.Authority;
 import com.yukgaejang.inflearnclone.domain.model.BaseEntity;
@@ -23,6 +24,7 @@ import org.hibernate.annotations.ColumnDefault;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "users")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User extends BaseEntity {
 
     @Column(unique = true)

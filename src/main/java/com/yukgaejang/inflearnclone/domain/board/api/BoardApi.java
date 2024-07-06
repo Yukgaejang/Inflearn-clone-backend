@@ -1,8 +1,11 @@
 package com.yukgaejang.inflearnclone.domain.board.api;
 
 import com.yukgaejang.inflearnclone.domain.board.application.BoardService;
+import com.yukgaejang.inflearnclone.domain.board.application.TopTagService;
+import com.yukgaejang.inflearnclone.domain.board.application.TopWriterService;
 import com.yukgaejang.inflearnclone.domain.board.dao.TagDao;
 import com.yukgaejang.inflearnclone.domain.board.dao.BoardUserDao;
+import com.yukgaejang.inflearnclone.domain.board.domain.TopWriter;
 import com.yukgaejang.inflearnclone.domain.board.dto.*;
 import com.yukgaejang.inflearnclone.domain.user.domain.User;
 import com.yukgaejang.inflearnclone.domain.board.domain.Board;
@@ -27,12 +30,16 @@ public class BoardApi {
     private final BoardService boardService;
     private final TagDao tagDao;
     private final BoardUserDao boardUserDao;
+    private final TopWriterService topWriterService;
+    private final TopTagService topTagService;
 
     @Autowired
-    public BoardApi(BoardService boardService, TagDao tagDao, BoardUserDao boardUserDao) {
+    public BoardApi(BoardService boardService, TagDao tagDao, BoardUserDao boardUserDao, TopWriterService topWriterService, TopTagService topTagService) {
         this.boardService = boardService;
         this.tagDao = tagDao;
         this.boardUserDao = boardUserDao;
+        this.topWriterService = topWriterService;
+        this.topTagService = topTagService;
     }
 
     // 게시글 전체 조회 -> 인프런에서 제공 x
@@ -93,7 +100,6 @@ public class BoardApi {
         }
     }
 
-
     // 게시글 생성
     @PostMapping("/create")
     @Operation(summary = "게시글 생성", description = "userid, title, content, category 필수값")
@@ -131,7 +137,6 @@ public class BoardApi {
                 .content(createPost.getContent())
                 .category(createPost.getCategory())
                 .user(user)
-                .tags(tags)
                 .tags(tags)
                 .build();
         Board createdPost = boardService.createPost(board, user, createPost.getTitle(), createPost.getContent(), createPost.getCategory(), tags);
@@ -197,6 +202,27 @@ public class BoardApi {
         return ResponseEntity.ok().build();
     }
 
+    // 주간 인기 작성자 조회
+    @GetMapping("/topwriters")
+    @Operation(summary = "주간 인기 작성자 조회", description = "주간(현재 기준 전 주) 인기 작성자 조회")
+    public ResponseEntity<List<TopWriter>> getTopWriters() {
+        List<TopWriter> topWriters = topWriterService.getTopWriters();
+        if (topWriters.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(topWriters);
+        }
+        return ResponseEntity.ok(topWriters);
+    }
 
+
+    // 주간 인기 태그 조회
+    @GetMapping("/toptags")
+    @Operation(summary = "주간 인기 태그 조회", description = "주간(현재 기준 전 주) 인기 태그를 조회")
+    public ResponseEntity<List<TopTagDto>> getTopTags() {
+        List<TopTagDto> topTags = topTagService.getTopTags();
+        if (topTags.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(topTags);
+        }
+        return ResponseEntity.ok(topTags);
+    }
 
 }
