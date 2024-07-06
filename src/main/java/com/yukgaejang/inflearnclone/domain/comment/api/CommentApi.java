@@ -31,8 +31,14 @@ public class CommentApi {
     @GetMapping("/boards/{boardId}/comments")
     @Operation(summary = "게시글에 종속된 게시글 조회", description = "boardId는 필수 값입니다.")
     public ResponseEntity<ApiResponse<List<CommentFindAllResponse>>> findAll(
-        @PathVariable Long boardId) {
-        List<CommentFindAllResponse> comments = commentService.findByBoardId(boardId);
+        @PathVariable Long boardId, Principal principal) {
+        List<CommentFindAllResponse> comments;
+        System.out.println(SecurityUtil.getCurrentUsername().get());
+        if (SecurityUtil.getCurrentUsername().get().equals("anonymousUser")) {
+            comments = commentService.findByBoardId(boardId, null);
+        } else {
+            comments = commentService.findByBoardId(boardId, principal.getName());
+        }
         return ResponseEntity.ok(success(comments));
     }
 

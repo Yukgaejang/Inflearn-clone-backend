@@ -28,10 +28,8 @@ public class CommentService {
     private final CommentDao commentDao;
 
     @Transactional(readOnly = true)
-    public List<CommentFindAllResponse> findByBoardId(Long postId) {
-        return commentDao.findByBoardId(postId).stream()
-            .map(comment -> CommentFindAllResponse.of(comment))
-            .toList();
+    public List<CommentFindAllResponse> findByBoardId(Long boardId, String email) {
+        return commentDao.findCommentList(boardId, email);
     }
 
     @Transactional

@@ -1,22 +1,24 @@
 package com.yukgaejang.inflearnclone.domain.comment.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.yukgaejang.inflearnclone.domain.comment.domain.Comment;
+import com.querydsl.core.annotations.QueryProjection;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
-@Builder
+@Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class CommentFindAllResponse {
 
-    private Long commentId;
+    private Long id;
 
     private String content;
 
-    private int depth;
+    private boolean isWriter;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime createdAt;
@@ -24,13 +26,13 @@ public class CommentFindAllResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime updatedAt;
 
-    public static CommentFindAllResponse of(Comment comment) {
-        return CommentFindAllResponse.builder()
-            .commentId(comment.getId())
-            .content(comment.getContent())
-            .depth(comment.getDepth())
-            .createdAt(comment.getCreatedAt())
-            .updatedAt(comment.getUpdatedAt())
-            .build();
+    @QueryProjection
+    public CommentFindAllResponse(Long id, String content, LocalDateTime createdAt,
+        LocalDateTime updatedAt, Boolean isWriter) {
+        this.id = id;
+        this.content = content;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.isWriter = isWriter;
     }
 }
