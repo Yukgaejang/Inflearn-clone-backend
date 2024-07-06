@@ -11,4 +11,5 @@ public class InflearnCloneApplication {
     public static void main(String[] args) {
         SpringApplication.run(InflearnCloneApplication.class, args);
     }
+
 }
