@@ -2,11 +2,9 @@ package com.yukgaejang.inflearnclone.domain.user.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.yukgaejang.inflearnclone.domain.board.domain.Board;
-import com.yukgaejang.inflearnclone.domain.login.entity.Authority;
 import com.yukgaejang.inflearnclone.domain.model.BaseEntity;
 import com.yukgaejang.inflearnclone.domain.user.dto.LoginType;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Null;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +13,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.Set;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -40,13 +37,6 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Board> boards;
-
-    @ManyToMany
-    @JoinTable(
-            name = "user_authority",
-            joinColumns = {@JoinColumn(name = "id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
-    private Set<Authority> authorities;
 
     @Builder
     public User(String nickname, String email, LoginType loginType) {

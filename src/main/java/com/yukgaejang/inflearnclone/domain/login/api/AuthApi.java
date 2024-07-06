@@ -72,8 +72,7 @@ public class AuthApi {
             }
 
             String token = authorizationHeader.substring(7);
-            Authentication authentication = tokenProvider.getAuthentication(token);
-            String email = authentication.getName();
+            String email = tokenProvider.getEmailFromToken(token);
 
             userService.deleteUser(email);
             return ResponseEntity.ok().body("User deletion success");
