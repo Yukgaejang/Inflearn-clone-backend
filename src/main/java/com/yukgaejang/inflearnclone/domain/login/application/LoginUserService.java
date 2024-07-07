@@ -10,9 +10,11 @@ import com.yukgaejang.inflearnclone.domain.user.dao.UserDao;
 import com.yukgaejang.inflearnclone.domain.user.domain.User;
 import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class LoginUserService {
@@ -60,7 +62,7 @@ public class LoginUserService {
     @Transactional
     public void updateUser(String email, UserUpdateDto userUpdateDto) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 사용자 입니다"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 사용자 입니다"));
 
         if (userUpdateDto.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
