@@ -3,25 +3,40 @@ package com.yukgaejang.inflearnclone.domain.board.api;
 import com.yukgaejang.inflearnclone.domain.board.application.BoardService;
 import com.yukgaejang.inflearnclone.domain.board.application.TopTagService;
 import com.yukgaejang.inflearnclone.domain.board.application.TopWriterService;
-import com.yukgaejang.inflearnclone.domain.board.dao.TagDao;
 import com.yukgaejang.inflearnclone.domain.board.dao.BoardUserDao;
-import com.yukgaejang.inflearnclone.domain.board.domain.TopWriter;
-import com.yukgaejang.inflearnclone.domain.board.dto.*;
-import com.yukgaejang.inflearnclone.domain.user.domain.User;
+import com.yukgaejang.inflearnclone.domain.board.dao.TagDao;
 import com.yukgaejang.inflearnclone.domain.board.domain.Board;
 import com.yukgaejang.inflearnclone.domain.board.domain.Tag;
+import com.yukgaejang.inflearnclone.domain.board.domain.TopWriter;
+import com.yukgaejang.inflearnclone.domain.board.dto.BoardDetailDto;
+import com.yukgaejang.inflearnclone.domain.board.dto.BoardDto;
+import com.yukgaejang.inflearnclone.domain.board.dto.BoardListDto;
+import com.yukgaejang.inflearnclone.domain.board.dto.BoardSearchResponse;
+import com.yukgaejang.inflearnclone.domain.board.dto.CreatePostDto;
+import com.yukgaejang.inflearnclone.domain.board.dto.PageResponseDto;
+import com.yukgaejang.inflearnclone.domain.board.dto.TopTagDto;
+import com.yukgaejang.inflearnclone.domain.user.domain.User;
+import com.yukgaejang.inflearnclone.global.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/boards")
@@ -34,12 +49,23 @@ public class BoardApi {
     private final TopTagService topTagService;
 
     @Autowired
-    public BoardApi(BoardService boardService, TagDao tagDao, BoardUserDao boardUserDao, TopWriterService topWriterService, TopTagService topTagService) {
+    public BoardApi(BoardService boardService, TagDao tagDao, BoardUserDao boardUserDao,
+        TopWriterService topWriterService, TopTagService topTagService) {
         this.boardService = boardService;
         this.tagDao = tagDao;
         this.boardUserDao = boardUserDao;
         this.topWriterService = topWriterService;
         this.topTagService = topTagService;
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "게시글 검색 조회", description = "키워드와 카테고리 별 검색 조회")
+    public ResponseEntity<ApiResponse<Page<BoardSearchResponse>>> searchBoard(
+        @RequestParam(required = false) String keyword,
+        @RequestParam(required = false) List<String> tags,
+        @PageableDefault Pageable pageable) {
+        Page<BoardSearchResponse> response = boardService.search(keyword, tags, pageable);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     // 게시글 전체 조회 -> 인프런에서 제공 x
@@ -48,14 +74,15 @@ public class BoardApi {
     public ResponseEntity<PageResponseDto<BoardListDto>> getAllPosts(Pageable pageable) {
         Page<BoardListDto> boards = boardService.getAllPosts(pageable);
         if (boards.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new PageResponseDto<>(0L, 0, 0, 0, List.of()));
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(new PageResponseDto<>(0L, 0, 0, 0, List.of()));
         }
         PageResponseDto<BoardListDto> response = new PageResponseDto<>(
-                boards.getTotalElements(),
-                boards.getTotalPages(),
-                boards.getSize(),
-                boards.getNumber(),
-                boards.getContent()
+            boards.getTotalElements(),
+            boards.getTotalPages(),
+            boards.getSize(),
+            boards.getNumber(),
+            boards.getContent()
         );
         return ResponseEntity.ok(response);
     }
@@ -64,20 +91,21 @@ public class BoardApi {
     @GetMapping("/{category}")
     @Operation(summary = "카테고리별 게시글 조회", description = "https://wooyong.shop/boards/category01?page=2&size=5 requestparam 설정 안할시 최신순")
     public ResponseEntity<PageResponseDto<BoardListDto>> getPostsByCategory(
-            @PathVariable("category") String category,
-            @RequestParam(value = "order", required = false) String order,
-            Pageable pageable
+        @PathVariable("category") String category,
+        @RequestParam(value = "order", required = false) String order,
+        Pageable pageable
     ) {
         Page<BoardListDto> boardPage = boardService.getPostsByCategory(category, order, pageable);
         if (boardPage.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new PageResponseDto<>(0L, 0, 0, 0, List.of()));
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(new PageResponseDto<>(0L, 0, 0, 0, List.of()));
         }
         PageResponseDto<BoardListDto> response = new PageResponseDto<>(
-                boardPage.getTotalElements(),
-                boardPage.getTotalPages(),
-                boardPage.getSize(),
-                boardPage.getNumber(),
-                boardPage.getContent()
+            boardPage.getTotalElements(),
+            boardPage.getTotalPages(),
+            boardPage.getSize(),
+            boardPage.getNumber(),
+            boardPage.getContent()
         );
         return ResponseEntity.ok(response);
     }
@@ -86,8 +114,8 @@ public class BoardApi {
     @GetMapping("/{category}/{id}")
     @Operation(summary = "게시글 상세 조회", description = "category, userid 필수 값/ 게시글 없을 경우 데이터 제공x")
     public ResponseEntity<Object> getPostById(
-            @PathVariable("category") String category,
-            @PathVariable("id") Long id
+        @PathVariable("category") String category,
+        @PathVariable("id") Long id
     ) {
         Optional<Board> boardOptional = boardService.getPostById(id);
         if (boardOptional.isPresent()) {
@@ -104,7 +132,7 @@ public class BoardApi {
     @PostMapping("/create")
     @Operation(summary = "게시글 생성", description = "userid, title, content, category 필수값")
     public ResponseEntity<Object> createPost(
-            @RequestBody CreatePostDto createPost
+        @RequestBody CreatePostDto createPost
     ) {
         try {
             createPost.validate(); // 태그, 제목, 내용 유효성 검사
@@ -133,13 +161,14 @@ public class BoardApi {
         }
 
         Board board = Board.builder()
-                .title(createPost.getTitle())
-                .content(createPost.getContent())
-                .category(createPost.getCategory())
-                .user(user)
-                .tags(tags)
-                .build();
-        Board createdPost = boardService.createPost(board, user, createPost.getTitle(), createPost.getContent(), createPost.getCategory(), tags);
+            .title(createPost.getTitle())
+            .content(createPost.getContent())
+            .category(createPost.getCategory())
+            .user(user)
+            .tags(tags)
+            .build();
+        Board createdPost = boardService.createPost(board, user, createPost.getTitle(),
+            createPost.getContent(), createPost.getCategory(), tags);
         BoardDetailDto createdPostDto = boardService.convertToBoardDetailDto(createdPost);
         return ResponseEntity.ok(createdPostDto);
     }
@@ -148,8 +177,8 @@ public class BoardApi {
     @PutMapping("/{id}")
     @Operation(summary = "게시글 수정", description = "title, content, category, tag 만 수정 가능")
     public ResponseEntity<Object> updatePost(
-            @PathVariable("id") Long id,
-            @RequestBody CreatePostDto boardDetails
+        @PathVariable("id") Long id,
+        @RequestBody CreatePostDto boardDetails
     ) {
 
         Optional<Board> existingPost = boardService.getPostById(id);
@@ -167,7 +196,8 @@ public class BoardApi {
                 });
                 tags.add(tag);
             }
-            Board updatedPost = boardService.updatePost(board, boardDetails.getTitle(), boardDetails.getContent(), boardDetails.getCategory(), tags);
+            Board updatedPost = boardService.updatePost(board, boardDetails.getTitle(),
+                boardDetails.getContent(), boardDetails.getCategory(), tags);
             BoardDto updatedPostDto = boardService.convertToDTO(updatedPost);
             return ResponseEntity.ok(updatedPostDto);
         } else {
@@ -179,7 +209,7 @@ public class BoardApi {
     @DeleteMapping("/{id}")
     @Operation(summary = "게시글 삭제", description = "게시글 삭제")
     public ResponseEntity<Void> deletePost(
-            @PathVariable("id") Long id
+        @PathVariable("id") Long id
     ) {
         boardService.deletePost(id);
         return ResponseEntity.noContent().build();
@@ -189,8 +219,8 @@ public class BoardApi {
     @PostMapping("/{id}/heart")
     @Operation(summary = "게시글 좋아요 토글", description = "게시글의 좋아요 상태 토글")
     public ResponseEntity<Void> toggleHeart(
-            @PathVariable("id") Long id,
-            @RequestParam Long userId
+        @PathVariable("id") Long id,
+        @RequestParam Long userId
     ) {
         Optional<User> userOptional = boardUserDao.findById(userId);
         if (userOptional.isEmpty()) {
