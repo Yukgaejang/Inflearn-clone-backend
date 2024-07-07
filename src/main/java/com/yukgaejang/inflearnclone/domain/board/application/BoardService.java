@@ -149,6 +149,8 @@ public class BoardService {
         return BoardListDto.builder()
             .id(board.getId())
             .title(board.getTitle())
+            .content(board.getContent())
+            .tags(board.getTags().stream().map(Tag::getName).collect(Collectors.toSet()))
             .category(board.getCategory())
             .createdAt(board.getCreatedAt())
             .updatedAt(board.getUpdatedAt())
