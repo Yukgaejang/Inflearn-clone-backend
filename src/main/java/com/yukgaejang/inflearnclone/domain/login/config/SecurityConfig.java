@@ -68,7 +68,8 @@ public class SecurityConfig {
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers("/mypage").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/auth").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "auth").authenticated()
                         .requestMatchers(HttpMethod.POST, "/board/**").authenticated()
                         .anyRequest().permitAll()
                 )
@@ -82,7 +83,8 @@ public class SecurityConfig {
                         )
                 )
 
-                .with(new JwtSecurityConfig(tokenProvider), customizer -> {});
+                .with(new JwtSecurityConfig(tokenProvider), customizer -> {
+                });
 
         return http.build();
 
