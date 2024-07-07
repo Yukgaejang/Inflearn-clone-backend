@@ -70,7 +70,7 @@ public class AuthApi {
     @DeleteMapping
     public ResponseEntity<String> deleteUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
         try {
-            if(SecurityUtil.getCurrentUsername().get().equals("anonymousUser")) {
+            if (SecurityUtil.getCurrentUsername().get().equals("anonymousUser")) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Authorization header");
             }
 
@@ -87,9 +87,10 @@ public class AuthApi {
     }
 
     @PatchMapping
-    public ResponseEntity<String> updateUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @Valid @RequestBody UserUpdateDto userUpdateDto) {
+    public ResponseEntity<String> updateUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+                                             @Valid @RequestBody UserUpdateDto userUpdateDto) {
         try {
-            if(SecurityUtil.getCurrentUsername().get().equals("anonymousUser")) {
+            if (SecurityUtil.getCurrentUsername().get().equals("anonymousUser")) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Authorization header");
             }
 
