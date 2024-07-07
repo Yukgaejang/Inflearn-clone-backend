@@ -11,7 +11,7 @@ import java.util.List;
 @Configuration
 public class GlobalCorsConfig {
     @Bean
-    public CorsFilter corsFilter(){
+    public CorsFilter globalcorsFilter(){
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration corsConfig = new CorsConfiguration();
