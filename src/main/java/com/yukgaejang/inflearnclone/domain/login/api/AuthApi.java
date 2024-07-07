@@ -6,6 +6,7 @@ import com.yukgaejang.inflearnclone.domain.login.dto.SignupDto;
 import com.yukgaejang.inflearnclone.domain.login.dto.UserUpdateDto;
 import com.yukgaejang.inflearnclone.domain.login.jwt.JwtFilter;
 import com.yukgaejang.inflearnclone.domain.login.jwt.TokenProvider;
+import com.yukgaejang.inflearnclone.domain.login.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -69,7 +70,7 @@ public class AuthApi {
     @DeleteMapping
     public ResponseEntity<String> deleteUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
         try {
-            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            if(SecurityUtil.getCurrentUsername().get().equals("anonymousUser")) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Authorization header");
             }
 
@@ -88,7 +89,7 @@ public class AuthApi {
     @PatchMapping
     public ResponseEntity<String> updateUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @Valid @RequestBody UserUpdateDto userUpdateDto) {
         try {
-            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            if(SecurityUtil.getCurrentUsername().get().equals("anonymousUser")) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Authorization header");
             }
 
