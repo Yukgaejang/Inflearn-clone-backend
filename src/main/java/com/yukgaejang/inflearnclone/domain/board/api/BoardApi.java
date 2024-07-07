@@ -8,13 +8,7 @@ import com.yukgaejang.inflearnclone.domain.board.dao.TagDao;
 import com.yukgaejang.inflearnclone.domain.board.domain.Board;
 import com.yukgaejang.inflearnclone.domain.board.domain.Tag;
 import com.yukgaejang.inflearnclone.domain.board.domain.TopWriter;
-import com.yukgaejang.inflearnclone.domain.board.dto.BoardDetailDto;
-import com.yukgaejang.inflearnclone.domain.board.dto.BoardDto;
-import com.yukgaejang.inflearnclone.domain.board.dto.BoardListDto;
-import com.yukgaejang.inflearnclone.domain.board.dto.BoardSearchResponse;
-import com.yukgaejang.inflearnclone.domain.board.dto.CreatePostDto;
-import com.yukgaejang.inflearnclone.domain.board.dto.PageResponseDto;
-import com.yukgaejang.inflearnclone.domain.board.dto.TopTagDto;
+import com.yukgaejang.inflearnclone.domain.board.dto.*;
 import com.yukgaejang.inflearnclone.domain.user.domain.User;
 import com.yukgaejang.inflearnclone.global.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -235,10 +229,10 @@ public class BoardApi {
     // 주간 인기 작성자 조회
     @GetMapping("/topwriters")
     @Operation(summary = "주간 인기 작성자 조회", description = "주간(현재 기준 전 주) 인기 작성자 조회")
-    public ResponseEntity<List<TopWriter>> getTopWriters() {
-        List<TopWriter> topWriters = topWriterService.getTopWriters();
+    public ResponseEntity<List<TopWriterDto>> getTopWriters() {
+        List<TopWriterDto> topWriters = topWriterService.getTopWriters();
         if (topWriters.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(topWriters);
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(topWriters);
     }
@@ -250,7 +244,7 @@ public class BoardApi {
     public ResponseEntity<List<TopTagDto>> getTopTags() {
         List<TopTagDto> topTags = topTagService.getTopTags();
         if (topTags.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(topTags);
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(topTags);
     }
