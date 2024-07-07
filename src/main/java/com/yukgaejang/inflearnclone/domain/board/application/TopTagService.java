@@ -30,6 +30,7 @@ public class TopTagService {
 
         List<Object[]> tagUsageStats = boardDao.findTagUsageStatsBetween(startDate, endDate);
 
+        // 기존 TopTag 데이터 삭제
         topTagDao.deleteAll();
 
         List<TopTag> topTags = tagUsageStats.stream()
