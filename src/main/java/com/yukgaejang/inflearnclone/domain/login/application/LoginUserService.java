@@ -1,6 +1,7 @@
 package com.yukgaejang.inflearnclone.domain.login.application;
 
 import com.yukgaejang.inflearnclone.domain.login.dto.SignupDto;
+import com.yukgaejang.inflearnclone.domain.login.dto.UserUpdateDto;
 import com.yukgaejang.inflearnclone.domain.login.entity.Authority;
 import com.yukgaejang.inflearnclone.domain.login.exception.DuplicateMemberException;
 import com.yukgaejang.inflearnclone.domain.login.exception.NotFoundMemberException;
@@ -54,6 +55,24 @@ public class LoginUserService {
     @Transactional
     public void deleteUser(String email) {
         userRepository.deleteByEmail(email);
+    }
+
+    @Transactional
+    public void updateUser(String email, UserUpdateDto userUpdateDto) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 사용자 입니다"));
+
+        if (userUpdateDto.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
+        }
+        if (userUpdateDto.getNickname() != null) {
+            user.setNickname(userUpdateDto.getNickname());
+        }
+        if (userUpdateDto.getProfileImage() != null) {
+            user.setProfileImage(userUpdateDto.getProfileImage());
+        }
+
+        userRepository.save(user);
     }
 
     @Transactional(readOnly = true)

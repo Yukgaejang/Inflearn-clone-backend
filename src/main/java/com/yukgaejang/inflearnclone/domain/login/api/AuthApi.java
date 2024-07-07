@@ -3,6 +3,7 @@ package com.yukgaejang.inflearnclone.domain.login.api;
 import com.yukgaejang.inflearnclone.domain.login.application.LoginUserService;
 import com.yukgaejang.inflearnclone.domain.login.dto.LoginDto;
 import com.yukgaejang.inflearnclone.domain.login.dto.SignupDto;
+import com.yukgaejang.inflearnclone.domain.login.dto.UserUpdateDto;
 import com.yukgaejang.inflearnclone.domain.login.jwt.JwtFilter;
 import com.yukgaejang.inflearnclone.domain.login.jwt.TokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -24,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/auth")
 public class AuthApi {
     private final LoginUserService userService;
     private final TokenProvider tokenProvider;
@@ -64,7 +66,7 @@ public class AuthApi {
         }
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping
     public ResponseEntity<String> deleteUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
         try {
             if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
@@ -76,10 +78,29 @@ public class AuthApi {
             String email = authentication.getName();
 
             userService.deleteUser(email);
-            return ResponseEntity.ok().body("User deletion success");
+            return ResponseEntity.ok().body("User delete success");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("User deletion failed: " + e.getMessage());
+                    .body("User delete failed: " + e.getMessage());
+        }
+    }
+
+    @PatchMapping
+    public ResponseEntity<String> updateUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @Valid @RequestBody UserUpdateDto userUpdateDto) {
+        try {
+            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Authorization header");
+            }
+
+            String token = authorizationHeader.substring(7);
+            Authentication authentication = tokenProvider.getAuthentication(token);
+            String email = authentication.getName();
+
+            userService.updateUser(email, userUpdateDto);
+            return ResponseEntity.ok().body("User update success");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("User update failed: " + e.getMessage());
         }
     }
 
