@@ -35,5 +35,10 @@ public interface BoardDao extends JpaRepository<Board, Long>, BoardCustomDao {
     List<Object[]> findTopTagsByCreatedAtBetween(
         @Param("startDate") LocalDateTime startDate,
         @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT t, COUNT(t) FROM Board b JOIN b.tags t WHERE b.createdAt BETWEEN :startDate AND :endDate GROUP BY t ORDER BY COUNT(t) DESC")
+    List<Object[]> findTagUsageStatsBetween(
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate);
 }
 
