@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 @Builder
@@ -15,6 +16,8 @@ public class BoardListDto {
     private Long id;
     private String title;
     private String category;
+    private String content;
+    private Set<String> tags;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String postAge;
