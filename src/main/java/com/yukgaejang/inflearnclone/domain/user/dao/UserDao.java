@@ -1,13 +1,14 @@
 package com.yukgaejang.inflearnclone.domain.user.dao;
 
 import com.yukgaejang.inflearnclone.domain.user.domain.User;
+import com.yukgaejang.inflearnclone.domain.user.dto.UserResponseDto;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserDao extends JpaRepository<User, Long> {
+public interface UserDao extends JpaRepository<User, Long>, UserDaoCustom {
 
     @EntityGraph(attributePaths = "authorities")
     Optional<User> findOneWithAuthoritiesByEmail(String email);
@@ -15,4 +16,7 @@ public interface UserDao extends JpaRepository<User, Long> {
     void deleteByEmail(String email);
 
     Optional<User> findByEmail(String email);
+
+    @Override
+    UserResponseDto getUserWithPostAndCommentCounts(String email);
 }
