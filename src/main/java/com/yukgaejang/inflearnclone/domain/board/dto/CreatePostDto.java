@@ -26,10 +26,10 @@ public class CreatePostDto {
     }
 
     public boolean isValidTag(String tag) {
-        String regex = "^[a-z0-9/_+#-]+$";
+        String regex = "^[a-zA-Z0-9가-힣/_+#-]+$";
         Pattern pattern = Pattern.compile(regex);
         return pattern.matcher(tag).matches();
-    }
+    } //특정 특수 문자 + 한글 + 소문자 가능(공백 불가)
 
     public void validateTags() {
         for (String tag : tagNames) {
