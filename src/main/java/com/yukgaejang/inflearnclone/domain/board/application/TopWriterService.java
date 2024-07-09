@@ -2,9 +2,10 @@ package com.yukgaejang.inflearnclone.domain.board.application;
 
 import com.yukgaejang.inflearnclone.domain.board.dao.BoardDao;
 import com.yukgaejang.inflearnclone.domain.board.dao.TopWriterDao;
+import com.yukgaejang.inflearnclone.domain.board.dto.TopWriterDto;
 import com.yukgaejang.inflearnclone.domain.board.domain.Board;
 import com.yukgaejang.inflearnclone.domain.board.domain.TopWriter;
-import com.yukgaejang.inflearnclone.domain.board.dao.BoardUserDao;
+import com.yukgaejang.inflearnclone.domain.user.dao.UserDao;
 import com.yukgaejang.inflearnclone.domain.user.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class TopWriterService {
     private TopWriterDao topWriterDao;
 
     @Autowired
-    private BoardUserDao boardUserDao;
+    private UserDao userDao;
 
     public void calculateWeeklyTopWriters() {
 
@@ -37,7 +38,7 @@ public class TopWriterService {
         LocalDateTime startOfLastWeek = now.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         LocalDateTime endOfLastWeek = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)).toLocalDate().atTime(23, 59, 59);
 
-        List<User> users = boardUserDao.findAll();
+        List<User> users = userDao.findAll();
 
         List<TopWriter> topWriters = users.stream().map(user -> {
                     List<Board> boards = boardDao.findBoardsByUserAndCreatedAtBetween(user.getId(), startOfLastWeek, endOfLastWeek);
@@ -50,7 +51,9 @@ public class TopWriterService {
         topWriterDao.saveAll(topWriters);
     }
 
-    public List<TopWriter> getTopWriters() {
-        return topWriterDao.findAllByOrderByScoreDesc();
+    public List<TopWriterDto> getTopWriters() {
+        return topWriterDao.findAllByOrderByScoreDesc().stream()
+                .map(writer -> new TopWriterDto(writer.getScore(), writer.getUser().getNickname()))
+                .collect(Collectors.toList());
     }
 }
