@@ -1,5 +1,6 @@
 package com.yukgaejang.inflearnclone.domain.user.dao;
 
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yukgaejang.inflearnclone.domain.board.domain.QBoard;
@@ -7,11 +8,16 @@ import com.yukgaejang.inflearnclone.domain.comment.domain.QComment;
 import com.yukgaejang.inflearnclone.domain.user.domain.QUser;
 import com.yukgaejang.inflearnclone.domain.user.domain.User;
 import com.yukgaejang.inflearnclone.domain.user.dto.QUserBoardResponseDto;
-import com.yukgaejang.inflearnclone.domain.user.dto.QUserCommentResponseDto;
+import com.yukgaejang.inflearnclone.domain.user.dto.QUserCommentDetailBoardDto;
 import com.yukgaejang.inflearnclone.domain.user.dto.UserBoardResponseDto;
+import com.yukgaejang.inflearnclone.domain.user.dto.UserCommentDetailBoardDto;
+import com.yukgaejang.inflearnclone.domain.user.dto.UserCommentDetailDto;
 import com.yukgaejang.inflearnclone.domain.user.dto.UserCommentResponseDto;
 import com.yukgaejang.inflearnclone.domain.user.dto.UserResponseDto;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -76,7 +82,7 @@ public class UserDaoImpl implements UserDaoCustom {
                 )
                 .from(QBoard.board)
                 .where(QBoard.board.user.id.eq(userEntity.getId()))
-                .orderBy(getBoardSortOrder(sortBy))
+                .orderBy(getCommentSortOrder(sortBy))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -95,8 +101,6 @@ public class UserDaoImpl implements UserDaoCustom {
 
     @Override
     public Page<UserCommentResponseDto> getUserCommentData(String email, Pageable pageable, String sortBy) {
-        QComment commentSub = new QComment("commentSub");
-
         User userEntity = queryFactory.selectFrom(QUser.user)
                 .where(QUser.user.email.eq(email))
                 .fetchOne();
@@ -105,62 +109,90 @@ public class UserDaoImpl implements UserDaoCustom {
             return Page.empty();
         }
 
-        List<Long> latestCommentIds = queryFactory.select(commentSub.id.max())
-                .from(commentSub)
-                .where(commentSub.user.id.eq(userEntity.getId()))
-                .groupBy(commentSub.board.id)
-                .fetch();
-
-        List<UserCommentResponseDto> userCommentList = queryFactory.select(
-                        new QUserCommentResponseDto(
-                                QBoard.board.id,
-                                QBoard.board.title,
-                                QComment.comment.content,
-                                QComment.comment.createdAt
-                        )
-                )
+        List<Long> boardIds = queryFactory.select(QComment.comment.board.id)
                 .from(QComment.comment)
-                .join(QComment.comment.board, QBoard.board)
-                .where(QComment.comment.id.in(latestCommentIds))
-                .orderBy(getCommentSortOrder(sortBy))
+                .where(QComment.comment.user.id.eq(userEntity.getId()))
+                .groupBy(QComment.comment.board.id)
+                .fetch();
+        System.out.println("boardIds: " + boardIds);
+
+        if (boardIds.isEmpty()) {
+            return Page.empty();
+        }
+
+        List<Long> pagedBoardIds = queryFactory.select(QBoard.board.id)
+                .from(QBoard.board)
+                .where(QBoard.board.id.in(boardIds))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+        System.out.println("pagedBoardIds: " + pagedBoardIds);
 
-        Long count = queryFactory.select(QBoard.board.countDistinct())
-                .from(QComment.comment)
-                .join(QComment.comment.board, QBoard.board)
-                .where(QComment.comment.id.in(latestCommentIds))
+        if (pagedBoardIds.isEmpty()) {
+            return Page.empty();
+        }
+
+        List<Tuple> boardAndComments = queryFactory.select(QBoard.board.id, QBoard.board.title, QComment.comment.content, QComment.comment.createdAt)
+                .from(QBoard.board)
+                .leftJoin(QComment.comment).on(QBoard.board.id.eq(QComment.comment.board.id))
+                .where(QBoard.board.id.in(pagedBoardIds))
+                .orderBy(getCommentSortOrder(sortBy))
+                .fetch();
+        System.out.println("boardAndComments: " + boardAndComments);
+
+        Map<Long, List<UserCommentDetailDto>> commentMap = boardAndComments.stream()
+                .collect(Collectors.groupingBy(
+                        tuple -> tuple.get(QBoard.board.id),
+                        Collectors.mapping(
+                                tuple -> new UserCommentDetailDto(
+                                        tuple.get(QComment.comment.content),
+                                        tuple.get(QComment.comment.createdAt)
+                                ),
+                                Collectors.toList()
+                        )
+                ));
+
+        List<UserCommentResponseDto> userCommentList = commentMap.entrySet().stream()
+                .map(entry -> {
+                    Long boardId = entry.getKey();
+                    List<UserCommentDetailDto> comments = entry.getValue();
+
+                    QBoard board = QBoard.board;
+                    UserCommentDetailBoardDto boardDto = queryFactory.select(
+                                    new QUserCommentDetailBoardDto(
+                                            board.id,
+                                            board.title
+                                    )
+                            )
+                            .from(board)
+                            .where(board.id.eq(boardId))
+                            .fetchOne();
+
+                    return new UserCommentResponseDto(
+                            Objects.requireNonNull(boardDto).getId(),
+                            boardDto.getTitle(),
+                            comments
+                    );
+                })
+                .collect(Collectors.toList());
+
+        long totalBoards = queryFactory.select(QBoard.board.count())
+                .from(QBoard.board)
+                .where(QBoard.board.id.in(boardIds))
                 .fetchOne();
 
-        if (count == null) {
-            count = 0L;
-        }
-
-        return new PageImpl<>(userCommentList, pageable, count);
-    }
-
-    private OrderSpecifier<?> getBoardSortOrder(String sortBy) {
-        if (sortBy == null) {
-            return QBoard.board.createdAt.desc();
-        } else if (sortBy.equals("likeCount")) {
-            return QBoard.board.likeCount.desc();
-        } else if (sortBy.equals("viewCount")) {
-            return QBoard.board.viewCount.desc();
-        } else {
-            return QBoard.board.createdAt.desc();
-        }
+        return new PageImpl<>(userCommentList, pageable, totalBoards);
     }
 
     private OrderSpecifier<?> getCommentSortOrder(String sortBy) {
         if (sortBy == null) {
-            return QComment.comment.createdAt.desc();
+            return QBoard.board.createdAt.desc();
         } else if (sortBy.equals("likeCount")) {
             return QBoard.board.likeCount.desc();
         } else if (sortBy.equals("viewCount")) {
             return QBoard.board.viewCount.desc();
         } else {
-            return QComment.comment.createdAt.desc();
+            return QBoard.board.createdAt.desc();
         }
     }
 }
