@@ -10,15 +10,13 @@ import java.util.regex.Pattern;
 @Getter
 @Setter
 public class CreatePostDto {
-    private Long userId;
     private String title;
     private String content;
     private String category;
     private List<String> tagNames;
 
     @Builder
-    public CreatePostDto(Long userId, String title, String content, String category, List<String> tagNames) {
-        this.userId = userId;
+    public CreatePostDto(String title, String content, String category, List<String> tagNames) {
         this.title = title;
         this.content = content;
         this.category = category;

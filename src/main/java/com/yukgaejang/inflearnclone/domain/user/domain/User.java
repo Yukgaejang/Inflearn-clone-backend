@@ -58,4 +58,5 @@ public class User extends BaseEntity {
     public String getNickname() {
         return nickname;
     }
+
 }

@@ -1,9 +1,8 @@
-package com.yukgaejang.inflearnclone.domain.login.service;
+package com.yukgaejang.inflearnclone.domain.login.application;
 
 
 import com.yukgaejang.inflearnclone.domain.user.dao.UserDao;
 import com.yukgaejang.inflearnclone.domain.user.domain.User;
-import java.util.ArrayList;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
