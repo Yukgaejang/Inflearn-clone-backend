@@ -1,5 +1,6 @@
 package com.yukgaejang.inflearnclone.domain.board.domain;
 
+import com.yukgaejang.inflearnclone.domain.comment.domain.Comment;
 import com.yukgaejang.inflearnclone.domain.model.BaseEntity;
 import com.yukgaejang.inflearnclone.domain.user.domain.User;
 import jakarta.persistence.*;
@@ -9,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -34,8 +36,8 @@ public class Board extends BaseEntity {
     @Column(nullable = false)
     private Long commentCount = 0L;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private User user;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -45,6 +47,9 @@ public class Board extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private Set<Tag> tags = new HashSet<>();
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
 
     @Builder
     public Board(String title, String content, String category, User user, Set<Tag> tags) {
@@ -56,6 +61,10 @@ public class Board extends BaseEntity {
         this.likeCount = 0L;
         this.viewCount = 0L;
         this.commentCount = 0L;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     // Post 생성
@@ -105,5 +114,9 @@ public class Board extends BaseEntity {
         if (this.commentCount > 0) {
             this.commentCount--;
         }
+    }
+
+    public void assignUser(User user) {
+        this.user = user;
     }
 }

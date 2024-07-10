@@ -16,4 +16,8 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> success(T body) {
         return new ApiResponse<>("", body);
     }
+
+    public static <T> ApiResponse<T> success(T body, String message) {
+        return new ApiResponse<>(message, body);
+    }
 }

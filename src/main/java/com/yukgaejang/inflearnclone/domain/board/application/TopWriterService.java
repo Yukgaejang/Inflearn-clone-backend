@@ -42,7 +42,7 @@ public class TopWriterService {
 
         List<TopWriter> topWriters = users.stream().map(user -> {
                     List<Board> boards = boardDao.findBoardsByUserAndCreatedAtBetween(user.getId(), startOfLastWeek, endOfLastWeek);
-                    long score = boards.stream().mapToLong(board -> 1 + board.getViewCount() + board.getLikeCount()).sum();
+                    long score = boards.stream().mapToLong(board -> 1 + board.getViewCount() + board.getLikeCount()+board.getCommentCount()).sum();
                     return TopWriter.builder().score(score).user(user).build();
                 }).sorted((tw1, tw2) -> Long.compare(tw2.getScore(), tw1.getScore()))
                 .limit(7)
