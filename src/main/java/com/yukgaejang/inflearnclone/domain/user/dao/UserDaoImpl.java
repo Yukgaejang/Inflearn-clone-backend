@@ -114,7 +114,6 @@ public class UserDaoImpl implements UserDaoCustom {
                 .where(QComment.comment.user.id.eq(userEntity.getId()))
                 .groupBy(QComment.comment.board.id)
                 .fetch();
-        System.out.println("boardIds: " + boardIds);
 
         if (boardIds.isEmpty()) {
             return Page.empty();
@@ -126,25 +125,24 @@ public class UserDaoImpl implements UserDaoCustom {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-        System.out.println("pagedBoardIds: " + pagedBoardIds);
 
         if (pagedBoardIds.isEmpty()) {
             return Page.empty();
         }
 
-        List<Tuple> boardAndComments = queryFactory.select(QBoard.board.id, QBoard.board.title, QComment.comment.content, QComment.comment.createdAt)
+        List<Tuple> boardAndComments = queryFactory.select(QBoard.board.id, QBoard.board.title, QComment.comment.id, QComment.comment.content, QComment.comment.createdAt)
                 .from(QBoard.board)
                 .leftJoin(QComment.comment).on(QBoard.board.id.eq(QComment.comment.board.id))
                 .where(QBoard.board.id.in(pagedBoardIds))
                 .orderBy(getCommentSortOrder(sortBy))
                 .fetch();
-        System.out.println("boardAndComments: " + boardAndComments);
 
         Map<Long, List<UserCommentDetailDto>> commentMap = boardAndComments.stream()
                 .collect(Collectors.groupingBy(
                         tuple -> tuple.get(QBoard.board.id),
                         Collectors.mapping(
                                 tuple -> new UserCommentDetailDto(
+                                        tuple.get(QComment.comment.id),
                                         tuple.get(QComment.comment.content),
                                         tuple.get(QComment.comment.createdAt)
                                 ),

@@ -9,10 +9,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class UserCommentDetailDto {
+    private Long commentId;
     private String content;
     private LocalDateTime createdAt;
 
-    public UserCommentDetailDto(String content, LocalDateTime createdAt) {
+    public UserCommentDetailDto(Long commentId, String content, LocalDateTime createdAt) {
+        this.commentId = commentId;
         this.content = content;
         this.createdAt = createdAt;
     }
