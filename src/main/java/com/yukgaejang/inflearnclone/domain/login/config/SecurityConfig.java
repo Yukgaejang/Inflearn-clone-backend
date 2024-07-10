@@ -69,7 +69,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers(HttpMethod.PATCH, "/auth").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "auth").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/auth").authenticated()
                         .requestMatchers(HttpMethod.POST, "/board/**").authenticated()
                         .anyRequest().permitAll()
                 )
