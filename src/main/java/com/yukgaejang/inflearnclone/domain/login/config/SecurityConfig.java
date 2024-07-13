@@ -35,10 +35,10 @@ public class SecurityConfig {
 
     @Autowired
     public SecurityConfig(
-            TokenProvider tokenProvider,
-            CorsFilter corsFilter,
-            JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
-            JwtAccessDeniedHandler jwtAccessDeniedHandler
+        TokenProvider tokenProvider,
+        CorsFilter corsFilter,
+        JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
+        JwtAccessDeniedHandler jwtAccessDeniedHandler
     ) {
         this.tokenProvider = tokenProvider;
         this.corsFilter = corsFilter;
@@ -54,37 +54,36 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer configure() {
         return (web) -> web.ignoring()
-                .requestMatchers(new AntPathRequestMatcher("/favicon.ico"));
+            .requestMatchers(new AntPathRequestMatcher("/favicon.ico"));
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
+            .csrf(AbstractHttpConfigurer::disable)
+            .cors(AbstractHttpConfigurer::disable)
+            .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+            .exceptionHandling(exceptionHandling -> exceptionHandling
+                .accessDeniedHandler(jwtAccessDeniedHandler)
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+            )
+            .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+                .requestMatchers("/mypage").authenticated()
+                .requestMatchers(HttpMethod.POST, "/board/**").authenticated()
+                .anyRequest().permitAll()
+            )
 
-                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .accessDeniedHandler(jwtAccessDeniedHandler)
-                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                )
-                .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers(HttpMethod.PATCH, "/auth").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/auth").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/board/**").authenticated()
-                        .anyRequest().permitAll()
-                )
+            .sessionManagement(sessionManagement ->
+                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
 
-                .sessionManagement(sessionManagement ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .headers(headers ->
+                headers.frameOptions(FrameOptionsConfig::sameOrigin
                 )
+            )
 
-                .headers(headers ->
-                        headers.frameOptions(FrameOptionsConfig::sameOrigin
-                        )
-                )
-
-                .with(new JwtSecurityConfig(tokenProvider), customizer -> {
-                });
+            .with(new JwtSecurityConfig(tokenProvider), customizer -> {
+            });
 
         return http.build();
 
